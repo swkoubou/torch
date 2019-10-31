@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message SpotInfoRequest {
+    uint32 spot_id = 1;
+}

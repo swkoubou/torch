@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "structs/spot_info.proto";
+
+message SpotInfoResponse {
+    SpotInfo spot_info = 1;
+}
