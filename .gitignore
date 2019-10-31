@@ -1,0 +1,9 @@
+### Editors
+.idea/
+.vscode/
+
+### Docker
+docker/mariadb
+
+### Server
+server/torch_server
