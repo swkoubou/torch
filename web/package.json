@@ -1,0 +1,23 @@
+{
+  "name": "torch",
+  "version": "1.0.0",
+  "description": "ikutokusai 2019",
+  "author": "swkoubou",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt-ts",
+    "build": "nuxt-ts build",
+    "generate": "nuxt-ts generate",
+    "start": "nuxt-ts start",
+    "lint": "eslint --ext .ts,.js,.vue ."
+  },
+  "dependencies": {
+    "@nuxt/typescript-runtime": "^0.2.2",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/typescript-build": "^0.3.2",
+    "@nuxtjs/eslint-config-typescript": "^0.1.3",
+    "@nuxtjs/vuetify": "^1.0.0"
+  }
+}
