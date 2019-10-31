@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+// 地図の座標
+message Location {
+    double latitude = 1; // 緯度
+    double longitude = 2; // 経度
+}
