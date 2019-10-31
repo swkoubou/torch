@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message DetectAreaResponse {
+    uint32 area_id = 1;
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "structs/location.proto";
+
+message DetectAreaRequest {
+    Location location = 1;
+}
