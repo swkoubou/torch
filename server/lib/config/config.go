@@ -8,6 +8,7 @@ type Config struct {
 	APIServerPort int `environment_key:"TORCH_API_PORT" type:"int"`
 
 	// MySQL
+	MySQLDB       string `environment_key:"TORCH_MYSQL_DB" type:"string"`
 	MySQLHost     string `environment_key:"TORCH_MYSQL_HOST" type:"string"`
 	MySQLPort     int    `environment_key:"TORCH_MYSQL_PORT" type:"int"`
 	MySQLUser     string `environment_key:"TORCH_MYSQL_USER" type:"string"`
@@ -20,11 +21,12 @@ func (config *Config) GetAPIServerLocation() string {
 }
 
 func (config *Config) GetDBServerLocation() string {
-	loc := fmt.Sprintf("%s:%s@tcp(%s:%d)/allergy?parseTime=true",
+	loc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		config.MySQLUser,
 		config.MySQLPassword,
 		config.MySQLHost,
 		config.MySQLPort,
+		config.MySQLDB,
 	)
 
 	return loc
