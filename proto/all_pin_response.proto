@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "structs/pin_info.proto";
+
+message AllPinInfoResponse {
+    repeated PinInfo pin_infos = 1;
+}
