@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 2800:2800
+    volumes:
+      - ./server/:/go/src/github.com/swkoubou/torch/server
+    depends_on:
+      - db
+  db:
+    image: mariadb/server
+    environment:
+      MARIADB_ROOT_PASSWORD: torch-password
+      MARIADB_DATABASE: torch
+      MARIADB_USER: torch
+      MARIADB_PASSWORD: torch-password
+    volumes:
+      - ./docker/mariadb/:/var/lib/mysql
+    ports:
+      - 3306:3306
