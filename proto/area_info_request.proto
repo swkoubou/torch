@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message AreaInfoRequest {
+    uint32 area_id = 1;
+}

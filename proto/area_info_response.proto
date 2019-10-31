@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "structs/area_info.proto";
+
+message AreaInfoResponse {
+    AreaInfo area_info = 1;
+}
