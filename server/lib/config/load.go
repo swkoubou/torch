@@ -9,6 +9,8 @@ import (
 )
 
 func Load() (config *Config, err error) {
+	config = &Config{}
+
 	// config型のフィールドを舐める
 	fieldsInfo := reflect.TypeOf(*config)
 	valuesInfo := reflect.ValueOf(config)
