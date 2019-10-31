@@ -16,8 +16,8 @@ generate_pb_server:
 	@protoc --proto_path ./proto --go_out=$(GOPATH)/src proto/structs/*.proto
 
 clean_pb_server:
-	@rm -rf ./server/view/*.pb.go
-	@rm -rf ./server/view/structs/*.pb.go
+	@rm -rf ./server/view/pb/messages/*.pb.go
+	@rm -rf ./server/view/pb/messages/structs/*.pb.go
 
 ## Web
 generate_pb_web:

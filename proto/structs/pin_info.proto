@@ -3,7 +3,7 @@ syntax = "proto3";
 import "structs/location.proto";
 
 package structs;
-option go_package = "github.com/swkoubou/torch/server/view/structs";
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
 
 // マップ上に「ここにスポットがあるよ」のを示すためのピン
 // スポット情報まるまるだと情報量が増えるので、ピンをたてるのに必要な情報だけを抜き出した

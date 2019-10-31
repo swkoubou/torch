@@ -3,7 +3,7 @@ syntax = "proto3";
 import "structs/spot_info.proto";
 
 package messages;
-option go_package = "github.com/swkoubou/torch/server/view";
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages";
 
 message SpotInfoResponse {
     structs.SpotInfo spot_info = 1;

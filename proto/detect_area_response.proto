@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package messages;
-option go_package = "github.com/swkoubou/torch/server/view";
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages";
 
 message DetectAreaResponse {
     uint32 area_id = 1;

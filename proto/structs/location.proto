@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package structs;
-option go_package = "github.com/swkoubou/torch/server/view/structs";
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
 
 // 地図の座標
 message Location {
