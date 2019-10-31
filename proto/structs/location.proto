@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/structs";
+
 // 地図の座標
 message Location {
     double latitude = 1; // 緯度

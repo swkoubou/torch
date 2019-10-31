@@ -2,6 +2,9 @@ syntax = "proto3";
 
 import "structs/area_info.proto";
 
+package messages;
+option go_package = "github.com/swkoubou/torch/server/view";
+
 message AreaInfoResponse {
-    AreaInfo area_info = 1;
+    structs.AreaInfo area_info = 1;
 }

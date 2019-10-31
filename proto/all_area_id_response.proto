@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+package messages;
+option go_package = "github.com/swkoubou/torch/server/view";
+
 message AllAreaIDsResponse {
     repeated uint32 area_ids = 1;
 }

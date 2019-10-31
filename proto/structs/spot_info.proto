@@ -1,6 +1,9 @@
 syntax = "proto3";
 
-import "location.proto";
+import "structs/location.proto";
+
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/structs";
 
 // スポット情報
 message SpotInfo {

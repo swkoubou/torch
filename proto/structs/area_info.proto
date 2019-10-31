@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/structs";
+
 // エリア情報
 message AreaInfo {
     uint32 area_id = 1; // エリアID
