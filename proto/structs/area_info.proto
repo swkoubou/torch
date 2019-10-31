@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// エリア情報
+message AreaInfo {
+    uint32 area_id = 1; // エリアID
+    string name = 2; // エリアの名前
+
+    double hot_score = 10; // ホット度合い(高い方がホット)
+
+    uint32 sum_like_count = 20; // 各スポットのいいね数を含む合計いいね数
+    uint32 specific_like_count = 21; // エリアのみのいいね数
+}
