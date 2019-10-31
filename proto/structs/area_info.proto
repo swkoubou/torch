@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "structs/rectangle.proto";
+
 package structs;
 option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
 
@@ -7,6 +9,7 @@ option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
 message AreaInfo {
     uint32 area_id = 1; // エリアID
     string name = 2; // エリアの名前
+    Rectangle region = 3; // エリアの矩形領域
 
     double hot_score = 10; // ホット度合い(高い方がホット)
 

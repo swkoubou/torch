@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "structs/location.proto";
+
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
+
+// 矩形領域
+// X, Y座標を組み合わせればすべての頂点を計算することが可能
+message Rectangle {
+    Location right_up = 1; // 右上の座標
+    Location left_bottom = 2; // 左下の座標
+}
