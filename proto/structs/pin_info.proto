@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "location.proto";
+
+// マップ上に「ここにスポットがあるよ」のを示すためのピン
+// スポット情報まるまるだと情報量が増えるので、ピンをたてるのに必要な情報だけを抜き出した
+message PinInfo {
+    uint32 spot_id = 1; // スポットID
+    string name = 2; // スポットの名前
+    Location location = 3; // スポットの座標
+
+    double hot_score = 10; // ホット度合い(高い方がホット)
+}
