@@ -1,33 +1,39 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
-
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/labstack/echo"
+	"github.com/swkoubou/torch/server/lib/config"
 )
 
-const ApiServerStartingPort = "TORCH_API_PORT"
-
 func main() {
-	// ポートの読み込み
-	port := os.Getenv(ApiServerStartingPort)
-	if port == "" {
-		log.Fatalln("Can't load starting port.")
-		return
-	}
-
 	// サーバーのインスタンスの準備
 	e := echo.New()
 
+	// 設定の読み込み
+	config, err := config.Load()
+	if err != nil {
+		e.Logger.Fatal("Can't load config.", err)
+		return
+	}
+
+	// DBのインスタンスの準備
+	dbLoc := config.GetDBServerLocation()
+	db, err := gorm.Open("mysql", dbLoc)
+	if err != nil {
+		e.Logger.Fatal("Can't connect to db.", err)
+		return
+	}
+
 	// ルーティング
-	// これはテスト用にHello, Worldしてる
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	err = Route(e, db)
+	if err != nil {
+		e.Logger.Fatal("Can't set handlers to router.", err)
+		return
+	}
 
 	// サーバーの起動
-	location := ":" + port
-	e.Logger.Fatal(e.Start(location))
+	apiLoc := config.GetAPIServerLocation()
+	e.Logger.Fatal(e.Start(apiLoc))
 }
