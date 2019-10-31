@@ -1,7 +1,7 @@
 {
-  "name": "web",
+  "name": "torch",
   "version": "1.0.0",
-  "description": "My super-duper Nuxt.js project",
+  "description": "ikutokusai 2019",
   "author": "swkoubou",
   "private": true,
   "scripts": {
