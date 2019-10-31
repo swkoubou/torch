@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message AllAreaIDsResponse {
+    repeated uint32 area_ids = 1;
+}
