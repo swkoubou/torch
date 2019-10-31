@@ -18,6 +18,15 @@
         </v-toolbar-items>
       </v-toolbar>
 
+      <v-form class="px-3">
+        <v-file-input label="写真"></v-file-input>
+        <v-text-field label="タイトル "></v-text-field>
+        <v-textarea label="説明"></v-textarea>
+
+        <v-col class="text-right" cols="12" sm="4">
+          <v-btn color="accent">SAVE</v-btn>
+        </v-col>
+      </v-form>
 
     </v-dialog>
   </div>
