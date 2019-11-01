@@ -12,6 +12,10 @@ import (
 type SpotPhotoModelImpl struct {
 }
 
+func NewSpotPhotoModel() SpotPhotoModel {
+	return &SpotPhotoModelImpl{}
+}
+
 func (model *SpotPhotoModelImpl) Add(image *multipart.FileHeader) (fileName string, err error) {
 	// 画像のの読み込み
 	srcFileName := image.Filename
