@@ -2,9 +2,31 @@
   <div>
     <v-btn fixed top left fab outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
 
-    <v-btn fixed top right fab outlined large color="primary">
-      <v-icon color="primary">mdi-menu</v-icon>
-    </v-btn>
+    <v-menu offset-y fixed top right>
+      <template v-slot:activator="{ on }">
+        <v-btn fixed top right fab outlined large color="primary" v-on="on">
+          <v-icon color="primary">mdi-menu</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item>
+          <v-list-item-title>ヘルプ</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>シェア</v-list-item-title>
+        </v-list-item>
+        <v-divider :inset="inset"></v-divider>
+        <v-list-item>
+          <v-list-item-title>問い合わせ</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>規約</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>プライバシー</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
@@ -50,6 +72,7 @@
         mapStyle: object
         scaleFlag: boolean
         touches: number
+        inset: boolean
     }
 
     export default Vue.extend({
@@ -87,6 +110,7 @@
                 },
                 scaleFlag: false,
                 touches: 0,
+                inset: false,
             };
         },
         created(): void {
