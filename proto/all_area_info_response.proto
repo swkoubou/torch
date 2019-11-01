@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "structs/area_info.proto";
+
+package messages;
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages";
+
+message AllAreaIDsResponse {
+    repeated structs.AreaInfo area_infos = 1;
+}
