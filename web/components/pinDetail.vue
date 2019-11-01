@@ -17,16 +17,13 @@
 
         <v-flex class="d-flex px-2 mt-4 mb-2">
           <!-- 各種SNSシェア -->
-          <v-btn fab class="mx-1">
+          <v-btn fab class="mx-1" @click="shareTwitter">
             <v-icon color="#00acee">mdi-twitter</v-icon>
           </v-btn>
-          <v-btn fab class="mx-1">
+          <v-btn fab class="mx-1" @click="shareFaceBook">
             <v-icon color="#3B5998">mdi-facebook</v-icon>
           </v-btn>
-          <v-btn fab class="mx-1">
-            <v-icon color="#262626">mdi-instagram</v-icon>
-          </v-btn>
-          <v-btn fab class="mx-1">
+          <v-btn fab class="mx-1" @click="shareLine">
             <v-icon color="#1dcd00">fab fa-line</v-icon>
           </v-btn>
 
@@ -88,6 +85,23 @@
         methods: {
             dialogClose(): void {
                 this.dialog = false;
+            },
+            shareTwitter(): void {
+                // TODO: なんかいい感じのテキストを....
+                let text = 'sample'
+                let shareURL = `https://twitter.com/intent/tweet?url=torch.swkoubou.com&hashtags=torch&text=${text}`;
+                open(shareURL, "_blank");
+            },
+            shareFaceBook(): void {
+                let shareURL = `https://www.facebook.com/sharer/sharer.php?u=torch.swkoubou.com`;
+                open(shareURL, "_blank");
+            },
+            shareLine(): void {
+                // TODO: なんかいい感じのテキストを....
+                let text = 'Torchはじめました\nよろしく\nにゃーん\n'
+                let message = encodeURIComponent(text +'torch.swkoubou.com');
+                let shareURL = `http://line.me/R/msg/text/?${message}`;
+                open(shareURL, "_blank");
             }
         }
     });
