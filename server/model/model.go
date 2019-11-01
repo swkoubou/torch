@@ -25,12 +25,14 @@ type AllSpotsModel interface {
 type LikeAreaModel interface {
 	Like(areaID uint) (count uint, err error)
 	CountLikes(areaID uint) (count uint, err error)
+	CountAllLikes(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (counted []types.AreaInfo, err error)
 }
 
 // スポットへのいいねと、いいね数の取得を行うモデル
 type LikeSpotModel interface {
 	Like(spotID uint) (count uint, err error)
 	CountLikes(spotID uint) (count uint, err error)
+	CountAllLikes(targetSpots []types.SpotInfo) (counted []types.SpotInfo, err error)
 }
 
 // 盛り上がり具合を計算するモデルです
