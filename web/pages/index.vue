@@ -4,6 +4,9 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
+      <div class="pin-parent" :style="mapStyle">
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"></div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -22,9 +25,14 @@
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
 
+    interface pinInfo {
+        x: number
+        y: number
+    }
+
     interface indexData {
         isAdmin: boolean
-        pins: Array<any>
+        pins: Array<pinInfo>
         touchStartPos: {
             x: number
             y: number
@@ -44,8 +52,10 @@
         }
         mapParentStyle: object
         mapStyle: object
+        realScale: number
         scaleFlag: boolean
         touches: number
+        testPins: Array<any>
     }
 
     export default Vue.extend({
@@ -81,9 +91,16 @@
                     width: '',
                     height: ''
                 },
+                realScale: 0,
                 scaleFlag: false,
                 touches: 0,
+                testPins: [],
             };
+        },
+        computed: {
+            areaName(): string {
+                return 'さばんなちほー';
+            }
         },
         created(): void {
             const query = this.$route.query;
@@ -143,6 +160,9 @@
                 this.scaleMeta.baseImageHeight = map.offsetHeight;
 
                 this.mapScale(0.4, true);
+                setTimeout(() => {
+                    this.loadPins();
+                }, 250);
             },
             mapScale(scale: number, force?: boolean): void {
                 const truthScale = (this.scaleMeta.baseImageWidth * scale) / this.scaleMeta.defaultSize.width;
@@ -156,6 +176,9 @@
                     this.$set(this.mapStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
                     this.$set(this.mapParentStyle, 'width', (this.scaleMeta.baseImageWidth * scale) + 'px');
                     this.$set(this.mapParentStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
+
+                    this.realScale = truthScale;
+                    this.updatePins();
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -203,19 +226,53 @@
                 }
 
             },
-            loadPins() {
-                this.pins = [
-                    {
-                        left: 0,
-                        right: 0
-                    }
-                ]
+            updatePins() {
+                const map: any = this.$refs.map;
+
+                const start = {
+                    lat: 35.48832,
+                    lon: 139.34024,
+                };
+                const end = {
+                    lat: 35.48491,
+                    lon: 139.34596,
+                };
+
+                const iw = map.offsetWidth;
+                const ih = map.offsetHeight;
+
+                this.pins = [];
+                this.testPins.forEach((testPin) => {
+                    const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
+                    const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
+                    this.pins.push({x: pxX, y: pxY});
+                })
             },
-        },
-        computed: {
-            areaName(): string {
-                return 'さばんなちほー';
-            }
+            loadPins() {
+                //TODO: あとで消す
+                this.testPins.push({
+                    lat: 35.48560,
+                    lon: 139.34135,
+                });
+                this.testPins.push({
+                    lat: 35.48655,
+                    lon: 139.34287,
+                });
+
+                // TODO: あとでAPIに変える
+                navigator.geolocation.getCurrentPosition((position) => {
+                    this.testPins.push({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    });
+                    this.updatePins();
+                }, () => {
+                    this.updatePins();
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 5,
+                });
+            },
         }
     })
 </script>
@@ -226,9 +283,28 @@
     top: 0;
     left: 0;
     z-index: 2;
+
+    .map {
+      margin: 0;
+      display: block;
+    }
+
+    .pin-parent {
+      position: relative;
+      top: -100%;
+
+      .pin {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: red;
+      }
+    }
   }
 
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
+    z-index: 3;
   }
 </style>

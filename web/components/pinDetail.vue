@@ -64,7 +64,7 @@
         data(): pinDetailInterface {
             return {
                 // TODO: DEBUG用
-                dialog: true
+                dialog: false
             };
         },
         computed: {
