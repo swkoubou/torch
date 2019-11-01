@@ -8,4 +8,5 @@ type NewSpotInfo struct {
 	Description string
 	PhotoReader io.Reader
 	LocatedAt   Location
+	AreaID      uint
 }

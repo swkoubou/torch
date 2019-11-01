@@ -13,6 +13,9 @@ type PinInfo struct {
 	Latitude  float64
 	Longitude float64
 
+	AreaID   uint
+	AreaInfo AreaInfo
+
 	StartingAt time.Time
 	EndingAt   time.Time
 

@@ -18,6 +18,9 @@ type SpotInfo struct {
 	Latitude  float64
 	Longitude float64
 
+	AreaInfoID uint
+	AreaInfo   AreaInfo
+
 	StartingAt time.Time
 	EndingAt   time.Time
 
