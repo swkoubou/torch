@@ -17,6 +17,22 @@ type AllPinsPbView interface {
 	GetGETHandler(ctx echo.Context) (message proto.Message, err error)
 }
 
+// エリアへのいいねを行う
+type LikeAreaPbView interface {
+	// POSTのハンドラー
+	GetPOSTHandler(ctx echo.Context, pb proto.Message) (message proto.Message, err error)
+	// POSTで受け取る proto.Message を埋め込んだ構造体を返す
+	GetPublishInterface() proto.Message
+}
+
+// スポットへのいいねを行う
+type LikeSpotPbViewModel interface {
+	// POSTのハンドラー
+	GetPOSTHandler(ctx echo.Context, pb proto.Message) (message proto.Message, err error)
+	// POSTで受け取る proto.Message を埋め込んだ構造体を返す
+	GetPublishInterface() proto.Message
+}
+
 // スポットの取得を行う
 type SpotInfoPbView interface {
 	// POSTのハンドラー
