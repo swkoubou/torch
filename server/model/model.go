@@ -47,8 +47,6 @@ type SpotModel interface {
 	Get(spotID uint) (spot *types.SpotInfo, err error)
 	// スポット情報を追加
 	Add(spot *types.NewSpotInfo) (err error)
-	// スポットにいいねする
-	Like(spotID uint) (err error)
 }
 
 // スポットの写真の保存・ファイル名を管理するモデル

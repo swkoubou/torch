@@ -65,7 +65,3 @@ func (model *SpotModelImpl) Add(spot *types.NewSpotInfo) (err error) {
 
 	return nil
 }
-
-func (model *SpotModelImpl) Like(spotID uint) (err error) {
-	panic("implement me")
-}
