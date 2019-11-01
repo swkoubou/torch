@@ -372,12 +372,25 @@
       top: -200%;
 
       .user-location {
+        $size: 15px;
         position: absolute;
         top: 0;
         left: 0;
-        width: 25px;
-        height: 25px;
-        background-color: blue;
+        width: $size;
+        height: $size;
+        background-color: rgb(40, 53, 147);
+        border-radius: 50%;
+
+        &::before {
+          display: block;
+          content: '';
+          width: $size * 4;
+          height: $size* 4;
+          border-radius: 50%;
+          background-color: rgba(57, 73, 171, .2);
+          margin: -($size*3/2);
+          border: solid thin rgba(57, 73, 171, .4);
+        }
       }
     }
   }
