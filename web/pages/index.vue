@@ -1,5 +1,6 @@
 <template>
   <div>
+    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
 
     <!-- いいねボタン -->
     <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
@@ -34,6 +35,17 @@
             if ('admin' in query) {
                 this.isAdmin = query['admin'] === 'hoo0Jaek8jooTeeti0eiciedeithougee4aexooGhaiNgieDa9gio6jaipeevach';
             }
+        },
+        computed: {
+            areaName(): string {
+                return 'さばんなちほー';
+            }
         }
     });
 </script>
+
+<style lang="scss" scoped>
+  .theme--light.v-btn.v-btn--disabled {
+    color: #d32f2f !important;
+  }
+</style>
