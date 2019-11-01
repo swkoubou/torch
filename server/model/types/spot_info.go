@@ -11,7 +11,7 @@ type SpotInfo struct {
 	Name          string
 	Description   string
 	PhotoFileName string
-	Likes         uint
+	Likes         uint `gorm:"-"`
 
 	// Location
 	// DBで変にFK作られたり構造体に入れ直そうとするとエグいので切り出す

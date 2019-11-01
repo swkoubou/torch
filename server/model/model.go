@@ -21,6 +21,18 @@ type AllPinsModel interface {
 	GetWithHotLevel() (areas []types.PinInfo, err error)
 }
 
+// エリアへのいいねと、いいね数の取得を行うモデル
+type LikeAreaModel interface {
+	Like(areaID uint) (count uint, err error)
+	CountLikes(areaID uint) (count uint, err error)
+}
+
+// スポットへのいいねと、いいね数の取得を行うモデル
+type LikeSpotModel interface {
+	Like(spotID uint) (count uint, err error)
+	CountLikes(spotID uint) (count uint, err error)
+}
+
 // 盛り上がり具合を計算するモデルです
 type HotLevelModel interface {
 	// エリアの盛り上がり具合を計算して、AreaInfoの配列に代入してから返す
