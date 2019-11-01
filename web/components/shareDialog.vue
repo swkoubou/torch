@@ -45,20 +45,16 @@
           },
           shareTwitter(): void {
             let shareURL = 'https://twitter.com/intent/tweet?text=torch.swkoubou.com&hashtags=torch';
-            location.href = shareURL;
+            open(shareURL, "_blank");
           },
           shareFaceBook(): void {
               let shareURL = 'https://www.facebook.com/sharer/sharer.php?u=torch.swkoubou.com/'
-              location.href = shareURL;
-          },
-          shareInstagram(): void {
-              let shareURL = '';
-              location.href = shareURL;
+              open(shareURL, "_blank");
           },
           shareLine(): void {
               let baseUrl = encodeURIComponent('torch.swkoubou.com');
               let shareURL = `https://social-plugins.line.me/lineit/share?url=${baseUrl}`;
-              location.href = shareURL;
+              open(shareURL, "_blank");
           }
       }
   })
