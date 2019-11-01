@@ -1,5 +1,7 @@
 <template>
   <div>
+    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
     </div>
@@ -208,10 +210,14 @@
                         right: 0
                     }
                 ]
+            },
+        },
+        computed: {
+            areaName(): string {
+                return 'さばんなちほー';
             }
         }
     })
-    ;
 </script>
 
 <style lang="scss" scoped>
@@ -221,5 +227,8 @@
     left: 0;
     z-index: 2;
   }
-</style>
 
+  .theme--light.v-btn.v-btn--disabled {
+    color: #d32f2f !important;
+  }
+</style>
