@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn fixed top left disabled outlined rounded large color="primary" width="10rem">{{areaName}}</v-btn>
+    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
 
     <!-- いいねボタン -->
     <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
@@ -45,4 +45,7 @@
 </script>
 
 <style lang="scss" scoped>
+  .theme--light.v-btn.v-btn--disabled {
+    color: #d32f2f !important;
+  }
 </style>
