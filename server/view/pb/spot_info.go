@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/swkoubou/torch/server/model"
 	"github.com/swkoubou/torch/server/view"
+	"github.com/swkoubou/torch/server/view/pb/messages"
 )
 
 type SpotInfoPbViewImpl struct {
@@ -20,5 +21,5 @@ func (view *SpotInfoPbViewImpl) GetPOSTHandler(ctx echo.Context, pb proto.Messag
 }
 
 func (view *SpotInfoPbViewImpl) GetPublishInterface() proto.Message {
-	panic("implement me")
+	return &messages.SpotInfoRequest{}
 }
