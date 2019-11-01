@@ -270,7 +270,17 @@
                 this.testPins.push({
                     lat: 35.48763,
                     lon: 139.34382,
-                    class: 'hot',
+                    class: 'hot1',
+                });
+                this.testPins.push({
+                    lat: 35.48559,
+                    lon: 139.34436,
+                    class: 'hot2',
+                });
+                this.testPins.push({
+                    lat: 35.48625,
+                    lon: 139.34375,
+                    class: 'hot3',
                 });
 
                 // TODO: あとでAPIに変える
@@ -309,7 +319,7 @@
 
       .pin {
         $size: 30px;
-        position: relative;
+        position: absolute;
         width: $size;
         height: $size;
 
@@ -321,17 +331,31 @@
           justify-items: center;
           align-items: center;
           color: rgb(0, 121, 107);
+          border-radius: 50%;
 
           &.active {
-            color: rgb(251, 140, 0);
+            color: rgb(25, 117, 210);
           }
 
           &.disabled {
             color: rgb(120, 144, 156);
           }
 
-          &.hot {
+          /** 一番低いホット **/
+          &.hot1 {
             color: rgb(229, 57, 53);
+          }
+
+          /** 真ん中ホット **/
+          &.hot2 {
+            color: rgb(230, 74, 25);
+          }
+
+          /** 一番高いホット **/
+          &.hot3 {
+            color: rgb(198, 40, 40);
+            border: solid 1px rgb(198, 40, 40);
+            animation: 1s linear blink-animate infinite;
           }
         }
 
@@ -342,5 +366,29 @@
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
     z-index: 3;
+  }
+
+  @keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @-webkit-keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
   }
 </style>
