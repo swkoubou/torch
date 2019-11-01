@@ -28,9 +28,9 @@ func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, t
 	return targetAreas, nil
 }
 
-func (model *HotLevelModelImpl) CalcSpotHotLevel(targetPins []types.SpotInfo) (calculated []types.SpotInfo, err error) {
+func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error) {
 	// TODO : いつか計算する
-	From(targetPins).
+	From(targetSpots).
 		Select(func(a interface{}) interface{} {
 			spot, isCast := a.(types.SpotInfo)
 			if !isCast {
@@ -42,5 +42,5 @@ func (model *HotLevelModelImpl) CalcSpotHotLevel(targetPins []types.SpotInfo) (c
 		}).
 		ToSlice(&calculated)
 
-	return targetPins, nil
+	return targetSpots, nil
 }
