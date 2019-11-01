@@ -32,9 +32,9 @@ type HotLevelModel interface {
 // スポット情報を取得・追加するモデル
 type SpotModel interface {
 	// スポット情報をすべて取得
-	Get(spotID uint) (spot types.SpotInfo, err error)
+	Get(spotID uint) (spot *types.SpotInfo, err error)
 	// スポット情報を追加
-	Add(spot types.NewSpotInfo) (err error)
+	Add(spot *types.NewSpotInfo) (err error)
 	// スポットにいいねする
 	Like(spotID uint) (err error)
 }
