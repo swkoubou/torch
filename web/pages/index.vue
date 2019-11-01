@@ -4,6 +4,9 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
+      <div class="pin-parent" :style="mapStyle">
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.x + 'px', 'left': p.y + 'px' }"></div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -22,9 +25,14 @@
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
 
+    interface pinInfo {
+        x: number
+        y: number
+    }
+
     interface indexData {
         isAdmin: boolean
-        pins: Array<any>
+        pins: Array<pinInfo>
         touchStartPos: {
             x: number
             y: number
@@ -44,6 +52,7 @@
         }
         mapParentStyle: object
         mapStyle: object
+        realScale: number
         scaleFlag: boolean
         touches: number
     }
@@ -81,9 +90,15 @@
                     width: '',
                     height: ''
                 },
+                realScale: 0,
                 scaleFlag: false,
                 touches: 0,
             };
+        },
+        computed: {
+            areaName(): string {
+                return 'さばんなちほー';
+            }
         },
         created(): void {
             const query = this.$route.query;
@@ -143,6 +158,7 @@
                 this.scaleMeta.baseImageHeight = map.offsetHeight;
 
                 this.mapScale(0.4, true);
+                this.loadPins();
             },
             mapScale(scale: number, force?: boolean): void {
                 const truthScale = (this.scaleMeta.baseImageWidth * scale) / this.scaleMeta.defaultSize.width;
@@ -156,6 +172,9 @@
                     this.$set(this.mapStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
                     this.$set(this.mapParentStyle, 'width', (this.scaleMeta.baseImageWidth * scale) + 'px');
                     this.$set(this.mapParentStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
+
+                    this.realScale = truthScale;
+                    this.updatePins();
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -203,19 +222,46 @@
                 }
 
             },
-            loadPins() {
+            updatePins() {
+                const map: any = this.$refs.map;
+                const testPin = {
+                    longitude: 35.487671,
+                    latitude: 139.340764,
+                };
+
+                const start = {
+                    longitude: 35.48832,
+                    latitude: 139.34024,
+                };
+                const end = {
+                    longitude: 35.48491,
+                    latitude: 139.34596,
+                };
+
+                const w = map.offsetWidth;
+                const h = map.offsetHeight;
+
+                const longitudeDiff = w / (end.longitude - start.longitude);
+                const latitudeDiff = h / (end.latitude - start.latitude);
+
+                const realDiffPosY = testPin.latitude - start.latitude;
+                const realDiffPosX = testPin.longitude - start.longitude;
+
+                const pxX = realDiffPosX * longitudeDiff * this.realScale;
+                const pxY = realDiffPosY * latitudeDiff * this.realScale;
+
+                console.log({'top': pxX + 'px', 'left': pxY + 'px'});
+
                 this.pins = [
                     {
-                        left: 0,
-                        right: 0
+                        x: pxX,
+                        y: pxY
                     }
                 ]
             },
-        },
-        computed: {
-            areaName(): string {
-                return 'さばんなちほー';
-            }
+            loadPins() {
+                this.updatePins();
+            },
         }
     })
 </script>
@@ -226,9 +272,29 @@
     top: 0;
     left: 0;
     z-index: 2;
+
+    .map {
+      margin: 0;
+      display: block;
+    }
+
+    .pin-parent {
+      position: relative;
+      top: -100%;
+      background-color: rgba(255, 255, 0, 0.5);
+
+      .pin {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: red;
+      }
+    }
   }
 
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
+    z-index: 3;
   }
 </style>
