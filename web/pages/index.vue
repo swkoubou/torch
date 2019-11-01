@@ -30,6 +30,11 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
+      <div class="pin-parent" :style="mapStyle">
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -50,9 +55,15 @@
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
 
+    interface pinInfo {
+        x: number
+        y: number
+        class: string
+    }
+
     interface indexData {
         isAdmin: boolean
-        pins: Array<any>
+        pins: Array<pinInfo>
         touchStartPos: {
             x: number
             y: number
@@ -72,8 +83,10 @@
         }
         mapParentStyle: object
         mapStyle: object
+        realScale: number
         scaleFlag: boolean
         touches: number
+        testPins: Array<any>
         menuValue: boolean
     }
 
@@ -110,10 +123,17 @@
                     width: '',
                     height: ''
                 },
+                realScale: 0,
                 scaleFlag: false,
                 touches: 0,
+                testPins: [],
                 menuValue: false,
             };
+        },
+        computed: {
+            areaName(): string {
+                return 'さばんなちほー';
+            }
         },
         created(): void {
             const query = this.$route.query;
@@ -174,6 +194,9 @@
                 this.scaleMeta.baseImageHeight = map.offsetHeight;
 
                 this.mapScale(0.4, true);
+                setTimeout(() => {
+                    this.loadPins();
+                }, 250);
             },
             mapScale(scale: number, force?: boolean): void {
                 const truthScale = (this.scaleMeta.baseImageWidth * scale) / this.scaleMeta.defaultSize.width;
@@ -187,6 +210,9 @@
                     this.$set(this.mapStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
                     this.$set(this.mapParentStyle, 'width', (this.scaleMeta.baseImageWidth * scale) + 'px');
                     this.$set(this.mapParentStyle, 'height', (this.scaleMeta.baseImageHeight * scale) + 'px');
+
+                    this.realScale = truthScale;
+                    this.updatePins();
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -234,20 +260,75 @@
                 }
 
             },
+            updatePins() {
+                const map: any = this.$refs.map;
+
+                const start = {
+                    lat: 35.48832,
+                    lon: 139.34024,
+                };
+                const end = {
+                    lat: 35.48491,
+                    lon: 139.34596,
+                };
+
+                const iw = map.offsetWidth;
+                const ih = map.offsetHeight;
+
+                this.pins = [];
+                this.testPins.forEach((testPin) => {
+                    const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
+                    const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
+                    this.pins.push({
+                        x: pxX,
+                        y: pxY,
+                        class: testPin.class,
+                    });
+                })
+            },
             loadPins() {
-                this.pins = [
-                    {
-                        left: 0,
-                        right: 0
-                    }
-                ]
+                //TODO: あとで消す
+                this.testPins.push({
+                    lat: 35.48560,
+                    lon: 139.34135,
+                    class: 'active',
+                });
+                this.testPins.push({
+                    lat: 35.48655,
+                    lon: 139.34287,
+                    class: 'disabled',
+                });
+                this.testPins.push({
+                    lat: 35.48763,
+                    lon: 139.34382,
+                    class: 'hot1',
+                });
+                this.testPins.push({
+                    lat: 35.48559,
+                    lon: 139.34436,
+                    class: 'hot2',
+                });
+                this.testPins.push({
+                    lat: 35.48625,
+                    lon: 139.34375,
+                    class: 'hot3',
+                });
+
+                // TODO: あとでAPIに変える
+                navigator.geolocation.getCurrentPosition((position) => {
+                    this.testPins.push({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    });
+                    this.updatePins();
+                }, () => {
+                    this.updatePins();
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 5,
+                });
             },
         },
-        computed: {
-            areaName(): string {
-                return 'さばんなちほー';
-            },
-        }
     })
 </script>
 
@@ -257,9 +338,88 @@
     top: 0;
     left: 0;
     z-index: 2;
+
+    .map {
+      margin: 0;
+      display: block;
+    }
+
+    .pin-parent {
+      position: relative;
+      top: -100%;
+
+      .pin {
+        $size: 30px;
+        position: absolute;
+        width: $size;
+        height: $size;
+
+        i {
+          display: flex;
+          width: $size;
+          height: $size;
+          font-size: $size;
+          justify-items: center;
+          align-items: center;
+          color: rgb(0, 121, 107);
+          border-radius: 50%;
+
+          &.active {
+            color: rgb(25, 117, 210);
+          }
+
+          &.disabled {
+            color: rgb(120, 144, 156);
+          }
+
+          /** 一番低いホット **/
+          &.hot1 {
+            color: rgb(229, 57, 53);
+          }
+
+          /** 真ん中ホット **/
+          &.hot2 {
+            color: rgb(230, 74, 25);
+          }
+
+          /** 一番高いホット **/
+          &.hot3 {
+            color: rgb(198, 40, 40);
+            border: solid 1px rgb(198, 40, 40);
+            animation: 1s linear blink-animate infinite;
+          }
+        }
+
+      }
+    }
   }
 
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
+    z-index: 3;
+  }
+
+  @keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @-webkit-keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
   }
 </style>

@@ -3,6 +3,7 @@ module github.com/swkoubou/torch/server
 go 1.13
 
 require (
+	github.com/ahmetb/go-linq/v3 v3.1.0 // indirect
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/jinzhu/gorm v1.9.11
 	github.com/labstack/echo v3.3.10+incompatible
