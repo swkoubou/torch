@@ -11,8 +11,8 @@ type AllAreasPbView interface {
 	GetGETHandler(ctx echo.Context) (message proto.Message, err error)
 }
 
-// ピンをすべて取得する
-type AllPinsPbView interface {
+// スポットをすべて取得する
+type AllSpotsPbView interface {
 	// GETのハンドラー
 	GetGETHandler(ctx echo.Context) (message proto.Message, err error)
 }

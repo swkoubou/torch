@@ -13,12 +13,12 @@ type AllAreasModel interface {
 	GetWithHotLevel() (areas []types.AreaInfo, err error)
 }
 
-// すべてのピン情報を取得したり盛り上がり具合を計算するモデル
-type AllPinsModel interface {
+// すべてのスポット情報を取得したり盛り上がり具合を計算するモデル
+type AllSpotsModel interface {
 	// エリア情報をすべて取得
-	Get() (areas []types.PinInfo, err error)
+	Get() (spots []types.SpotInfo, err error)
 	// エリア情報を盛り上がり具合を計算した上ですべて取得
-	GetWithHotLevel() (areas []types.PinInfo, err error)
+	GetWithHotLevel() (spots []types.SpotInfo, err error)
 }
 
 // エリアへのいいねと、いいね数の取得を行うモデル
@@ -37,8 +37,8 @@ type LikeSpotModel interface {
 type HotLevelModel interface {
 	// エリアの盛り上がり具合を計算して、AreaInfoの配列に代入してから返す
 	CalcAreaHotLevel(targetAreas []types.AreaInfo, targetPins []types.PinInfo) (calculated []types.AreaInfo, err error)
-	// スポットの盛り上がり具合を計算して、PinInfoの配列に代入してから返す
-	CalcPinHotLevel(targetPins []types.PinInfo) (calculated []types.PinInfo, err error)
+	// スポットの盛り上がり具合を計算して、SpotInfoの配列に代入してから返す
+	CalcPinHotLevel(targetPins []types.SpotInfo) (calculated []types.SpotInfo, err error)
 }
 
 // スポット情報を取得・追加するモデル
