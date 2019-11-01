@@ -17,7 +17,19 @@ func NewSpotInfoPbView(spotModel model.SpotModel) (view view.SpotInfoPbView) {
 }
 
 func (view *SpotInfoPbViewImpl) GetPOSTHandler(ctx echo.Context, pb proto.Message) (message proto.Message, err error) {
-	panic("implement me")
+	// リクエストの解釈
+	requestPb := pb.(*messages.SpotInfoRequest)
+	reqSpotId := uint(requestPb.GetSpotId())
+
+	// モデルに投げる
+	found, err := view.spotModel.Get(reqSpotId)
+	if err != nil {
+		return nil, err
+	}
+
+	// レスポンスをつくる
+	response := ToSpotInfoResponse(found)
+	return response, nil
 }
 
 func (view *SpotInfoPbViewImpl) GetPublishInterface() proto.Message {
