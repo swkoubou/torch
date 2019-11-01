@@ -267,6 +267,7 @@
                     });
                     this.updatePins();
                 }, () => {
+                    this.updatePins();
                 }, {
                     enableHighAccuracy: true,
                     maximumAge: 5,
