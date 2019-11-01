@@ -36,9 +36,9 @@ type LikeSpotModel interface {
 // 盛り上がり具合を計算するモデルです
 type HotLevelModel interface {
 	// エリアの盛り上がり具合を計算して、AreaInfoの配列に代入してから返す
-	CalcAreaHotLevel(targetAreas []types.AreaInfo, targetPins []types.PinInfo) (calculated []types.AreaInfo, err error)
+	CalcAreaHotLevel(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (calculated []types.AreaInfo, err error)
 	// スポットの盛り上がり具合を計算して、SpotInfoの配列に代入してから返す
-	CalcPinHotLevel(targetPins []types.SpotInfo) (calculated []types.SpotInfo, err error)
+	CalcSpotHotLevel(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error)
 }
 
 // スポット情報を取得・追加するモデル
