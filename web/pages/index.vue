@@ -15,7 +15,7 @@
         <v-list-item>
           <v-list-item-title>シェア</v-list-item-title>
         </v-list-item>
-        <v-divider :inset="inset"></v-divider>
+        <v-divider></v-divider>
         <v-list-item>
           <v-list-item-title>問い合わせ</v-list-item-title>
         </v-list-item>
@@ -72,7 +72,6 @@
         mapStyle: object
         scaleFlag: boolean
         touches: number
-        inset: boolean
     }
 
     export default Vue.extend({
@@ -110,7 +109,6 @@
                 },
                 scaleFlag: false,
                 touches: 0,
-                inset: false,
             };
         },
         created(): void {
