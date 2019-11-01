@@ -10,13 +10,19 @@ import (
 type SpotModelImpl struct {
 	db             *gorm.DB
 	spotPhotoModel SpotPhotoModel
+	likeSpotModel  LikeSpotModel
 }
 
-func NewSpotModel(db *gorm.DB, spotPhotoModel SpotPhotoModel) SpotModel {
-	return &SpotModelImpl{db: db, spotPhotoModel: spotPhotoModel}
+func NewSpotModel(db *gorm.DB, spotPhotoModel SpotPhotoModel, likeSpotModel LikeSpotModel) SpotModel {
+	return &SpotModelImpl{
+		db:             db,
+		spotPhotoModel: spotPhotoModel,
+		likeSpotModel:  likeSpotModel,
+	}
 }
 
 func (model *SpotModelImpl) Get(spotID uint) (spot *types.SpotInfo, err error) {
+	// スポット情報の取得
 	spot = &types.SpotInfo{}
 	result := model.db.First(&spot, spotID)
 
@@ -27,6 +33,14 @@ func (model *SpotModelImpl) Get(spotID uint) (spot *types.SpotInfo, err error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// スポットのいいね数の取得(別DBにあるのでそっちでやる)
+	likeCount, err := model.likeSpotModel.CountLikes(spot.Model.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	spot.Likes = likeCount
 
 	return spot, nil
 }
