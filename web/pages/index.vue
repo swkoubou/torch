@@ -5,7 +5,9 @@
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
       <div class="pin-parent" :style="mapStyle">
-        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"></div>
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
       </div>
     </div>
 
@@ -28,6 +30,7 @@
     interface pinInfo {
         x: number
         y: number
+        class: string
     }
 
     interface indexData {
@@ -245,7 +248,11 @@
                 this.testPins.forEach((testPin) => {
                     const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
                     const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
-                    this.pins.push({x: pxX, y: pxY});
+                    this.pins.push({
+                        x: pxX,
+                        y: pxY,
+                        class: testPin.class,
+                    });
                 })
             },
             loadPins() {
@@ -253,10 +260,17 @@
                 this.testPins.push({
                     lat: 35.48560,
                     lon: 139.34135,
+                    class: 'active',
                 });
                 this.testPins.push({
                     lat: 35.48655,
                     lon: 139.34287,
+                    class: 'disabled',
+                });
+                this.testPins.push({
+                    lat: 35.48763,
+                    lon: 139.34382,
+                    class: 'hot',
                 });
 
                 // TODO: あとでAPIに変える
@@ -294,11 +308,33 @@
       top: -100%;
 
       .pin {
+        $size: 30px;
         position: relative;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: red;
+        width: $size;
+        height: $size;
+
+        i {
+          display: flex;
+          width: $size;
+          height: $size;
+          font-size: $size;
+          justify-items: center;
+          align-items: center;
+          color: rgb(0, 121, 107);
+
+          &.active {
+            color: rgb(251, 140, 0);
+          }
+
+          &.disabled {
+            color: rgb(120, 144, 156);
+          }
+
+          &.hot {
+            color: rgb(229, 57, 53);
+          }
+        }
+
       }
     }
   }
