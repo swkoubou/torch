@@ -5,7 +5,9 @@
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
       <div class="pin-parent" :style="mapStyle">
-        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"></div>
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
       </div>
     </div>
 
@@ -28,6 +30,7 @@
     interface pinInfo {
         x: number
         y: number
+        class: string
     }
 
     interface indexData {
@@ -245,7 +248,11 @@
                 this.testPins.forEach((testPin) => {
                     const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
                     const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
-                    this.pins.push({x: pxX, y: pxY});
+                    this.pins.push({
+                        x: pxX,
+                        y: pxY,
+                        class: testPin.class,
+                    });
                 })
             },
             loadPins() {
@@ -253,10 +260,27 @@
                 this.testPins.push({
                     lat: 35.48560,
                     lon: 139.34135,
+                    class: 'active',
                 });
                 this.testPins.push({
                     lat: 35.48655,
                     lon: 139.34287,
+                    class: 'disabled',
+                });
+                this.testPins.push({
+                    lat: 35.48763,
+                    lon: 139.34382,
+                    class: 'hot1',
+                });
+                this.testPins.push({
+                    lat: 35.48559,
+                    lon: 139.34436,
+                    class: 'hot2',
+                });
+                this.testPins.push({
+                    lat: 35.48625,
+                    lon: 139.34375,
+                    class: 'hot3',
                 });
 
                 // TODO: あとでAPIに変える
@@ -294,11 +318,47 @@
       top: -100%;
 
       .pin {
-        position: relative;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: red;
+        $size: 30px;
+        position: absolute;
+        width: $size;
+        height: $size;
+
+        i {
+          display: flex;
+          width: $size;
+          height: $size;
+          font-size: $size;
+          justify-items: center;
+          align-items: center;
+          color: rgb(0, 121, 107);
+          border-radius: 50%;
+
+          &.active {
+            color: rgb(25, 117, 210);
+          }
+
+          &.disabled {
+            color: rgb(120, 144, 156);
+          }
+
+          /** 一番低いホット **/
+          &.hot1 {
+            color: rgb(229, 57, 53);
+          }
+
+          /** 真ん中ホット **/
+          &.hot2 {
+            color: rgb(230, 74, 25);
+          }
+
+          /** 一番高いホット **/
+          &.hot3 {
+            color: rgb(198, 40, 40);
+            border: solid 1px rgb(198, 40, 40);
+            animation: 1s linear blink-animate infinite;
+          }
+        }
+
       }
     }
   }
@@ -306,5 +366,29 @@
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
     z-index: 3;
+  }
+
+  @keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @-webkit-keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
   }
 </style>
