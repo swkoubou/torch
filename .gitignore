@@ -8,4 +8,5 @@ docker/mariadb
 ### Server
 server/torch_server
 
+.DS_Store
 *.pb.go

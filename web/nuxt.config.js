@@ -45,7 +45,50 @@ export default {
   /*
   ** Nuxt.js modules
   */
-  modules: [],
+  modules: [
+    '@nuxtjs/pwa',
+  ],
+  manifest: {
+    name: 'torch',
+    lang: 'ja',
+    icons: [
+      {
+        src: "/pwa/logo_64.png",
+        sizes: "64x64",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_120.png",
+        sizes: "120x120",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_144.png",
+        sizes: "144x144",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_152.png",
+        sizes: "152x152",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_384.png",
+        sizes: "384x384",
+        type: "image/png",
+      },
+      {
+        src: "/pwa/logo_512.png",
+        sizes: "512x512",
+        type: "image/png",
+      }
+    ]
+  },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

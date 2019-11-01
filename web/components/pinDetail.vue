@@ -14,7 +14,7 @@
 
       <v-img height="300" :src="pinImageUrl"></v-img>
 
-      <v-flex class="d-flex px-2">
+      <v-flex class="d-flex px-2 mt-4 mb-2">
         <!-- 各種SNSシェア -->
         <v-btn fab class="mx-1">
           <v-icon color="#00acee">mdi-twitter</v-icon>
@@ -38,7 +38,7 @@
         </div>
       </v-flex>
 
-      <div class="my-3">
+      <div class="my-3 px-3">
         <pre class="text-wrap">{{ pinDetailText }}</pre>
       </div>
 
