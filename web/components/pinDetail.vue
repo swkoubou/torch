@@ -38,7 +38,7 @@
         </div>
       </v-flex>
 
-      <div class="my-3">
+      <div class="my-3 px-3">
         <pre class="text-wrap">{{ pinDetailText }}</pre>
       </div>
 
