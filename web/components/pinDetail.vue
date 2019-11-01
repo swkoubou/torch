@@ -1,51 +1,53 @@
 <template>
   <div>
     <v-dialog fullscreen v-model="dialog">
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="dialogClose">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <v-toolbar-title>{{ pinName }}の情報</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn dark text @click="dialogClose">閉じる</v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
-
-      <v-img height="300" :src="pinImageUrl"></v-img>
-
-      <v-flex class="d-flex px-2 mt-4 mb-2">
-        <!-- 各種SNSシェア -->
-        <v-btn fab class="mx-1">
-          <v-icon color="#00acee">mdi-twitter</v-icon>
-        </v-btn>
-        <v-btn fab class="mx-1">
-          <v-icon color="#3B5998">mdi-facebook</v-icon>
-        </v-btn>
-        <v-btn fab class="mx-1">
-          <v-icon color="#262626">mdi-instagram</v-icon>
-        </v-btn>
-        <v-btn fab class="mx-1">
-          <v-icon color="#1dcd00">fab fa-line</v-icon>
-        </v-btn>
-
-        <!-- いいね -->
-        <div class="ml-auto">
-          <v-btn fab>
-            <v-icon color="primary">mdi-heart</v-icon>
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="dialogClose">
+            <v-icon>mdi-close</v-icon>
           </v-btn>
-          <p class="caption text-center" style="color: #888888">{{ pinFavCount }}</p>
+          <v-toolbar-title>{{ pinName }}の情報</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="dialogClose">閉じる</v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+
+        <v-img height="300" :src="pinImageUrl"></v-img>
+
+        <v-flex class="d-flex px-2 mt-4 mb-2">
+          <!-- 各種SNSシェア -->
+          <v-btn fab class="mx-1">
+            <v-icon color="#00acee">mdi-twitter</v-icon>
+          </v-btn>
+          <v-btn fab class="mx-1">
+            <v-icon color="#3B5998">mdi-facebook</v-icon>
+          </v-btn>
+          <v-btn fab class="mx-1">
+            <v-icon color="#262626">mdi-instagram</v-icon>
+          </v-btn>
+          <v-btn fab class="mx-1">
+            <v-icon color="#1dcd00">fab fa-line</v-icon>
+          </v-btn>
+
+          <!-- いいね -->
+          <div class="ml-auto">
+            <v-btn fab>
+              <v-icon color="primary">mdi-heart</v-icon>
+            </v-btn>
+            <p class="caption text-center" style="color: #888888">{{ pinFavCount }}</p>
+          </div>
+        </v-flex>
+
+        <div class="my-3 px-3">
+          <pre class="text-wrap">{{ pinDetailText }}</pre>
         </div>
-      </v-flex>
 
-      <div class="my-3 px-3">
-        <pre class="text-wrap">{{ pinDetailText }}</pre>
-      </div>
+        <!-- ユーザー投稿欄 -->
+        <div>
 
-      <!-- ユーザー投稿欄 -->
-      <div>
-
-      </div>
+        </div>
+      </v-card>
     </v-dialog>
   </div>
 </template>
