@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+    <v-btn fixed top left fab outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+
+    <v-btn fixed top right fab outlined large color="primary">
+      <v-icon color="primary">mdi-menu</v-icon>
+    </v-btn>
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
