@@ -20,7 +20,7 @@
 
       <v-form class="px-3">
         <v-file-input label="写真"></v-file-input>
-        <v-text-field label="タイトル "></v-text-field>
+        <v-text-field label="タイトル" v-model="title"></v-text-field>
         <p>期間</p>
         <v-checkbox label="すべての期間" v-model="allTime"></v-checkbox>
         <v-radio-group :disabled="allTime">
@@ -31,7 +31,7 @@
           <p>{{ startAndEndTime.startTime }} 〜 {{ startAndEndTime.endTime }}</p>
         </v-radio-group>
 
-        <v-textarea label="説明"></v-textarea>
+        <v-textarea label="説明" v-model="description"></v-textarea>
 
         <v-col class="text-right" cols="12" sm="4">
           <v-btn color="accent">SAVE</v-btn>
@@ -66,12 +66,14 @@
     }
 
     interface AdminInterface {
-        dialogShow: boolean,
-        timeDialogShow: boolean,
-        allTime: boolean,
-        allDate: boolean,
-        startAndEndTime: startAndEndTimeInterface,
-        startAndEndTimeTemp: startAndEndTimeInterface,
+        dialogShow: boolean
+        timeDialogShow: boolean
+        title: string
+        description: string
+        allTime: boolean
+        allDate: boolean
+        startAndEndTime: startAndEndTimeInterface
+        startAndEndTimeTemp: startAndEndTimeInterface
     }
 
     export default Vue.extend({
@@ -80,6 +82,8 @@
             return {
                 dialogShow: false,
                 timeDialogShow: false,
+                title: '',
+                description: '',
                 allTime: true,
                 allDate: true,
                 startAndEndTime: {
