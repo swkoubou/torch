@@ -26,9 +26,6 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import getDistance from 'geolib/es/getDistance';
-    import getPreciseDistance from 'geolib/es/getPreciseDistance';
-    import convertDistance from 'geolib/es/convertDistance';
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
 
