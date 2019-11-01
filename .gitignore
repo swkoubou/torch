@@ -8,9 +8,7 @@ docker/mariadb
 ### Server
 server/torch_server
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 .DS_Store
 *.pb.go
+
+web/proto/*
