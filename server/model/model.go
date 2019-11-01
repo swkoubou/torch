@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/swkoubou/torch/server/model/types"
-	"io"
+	"mime/multipart"
 )
 
 // すべてのエリア情報を取得したり盛り上がり具合を計算するモデル
@@ -41,5 +41,5 @@ type SpotModel interface {
 
 // スポットの写真の保存・ファイル名を管理するモデル
 type SpotPhotoModel interface {
-	Add(imageReader io.Reader) (fileName string, err error) // ファイル名であってファイルパスではない
+	Add(image *multipart.FileHeader) (fileName string, err error) // ファイル名であってファイルパスではない
 }
