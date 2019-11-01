@@ -6,7 +6,7 @@ import "time"
 // 内部的にはScanで実装する ( http://gorm.io/docs/query.html#Scan )
 type PinInfo struct {
 	ID    uint
-	Likes uint
+	Likes uint `gorm:"-"`
 
 	// Location
 	// DBで変にFK作られたり構造体に入れ直そうとするとエグいので切り出す

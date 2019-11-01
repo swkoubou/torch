@@ -6,7 +6,7 @@ type AreaInfo struct {
 	gorm.Model
 
 	Name  string
-	Likes uint
+	Likes uint `gorm:"-"`
 
 	// Region
 	// DBで変にFK作られたり構造体に入れ直そうとするとエグいので切り出す
