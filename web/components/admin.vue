@@ -14,12 +14,12 @@
         <v-toolbar-title>新しいスポットの追加</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark text @click="dialogShow = false">Save</v-btn>
+          <v-btn dark text @click="save">Save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
 
       <v-form class="px-3">
-        <v-file-input label="写真"></v-file-input>
+        <v-file-input label="写真" ref="photo"></v-file-input>
         <v-text-field label="タイトル" v-model="title"></v-text-field>
         <p>期間</p>
         <v-checkbox label="すべての期間" v-model="allTime"></v-checkbox>
@@ -100,8 +100,22 @@
             applyTimeSettings(): void {
                 this.startAndEndTime = Object.assign({}, this.startAndEndTimeTemp);
                 this.timeDialogShow = false;
+            },
+            save(): void {
+                // @ts-ignore
+                const imageInput = this.$refs['photo'].$el.querySelector('input');
+                const file = imageInput.files[0];
+                let reader = new FileReader();
+                reader.onload = ((theFile) => {
+                    return (e: any) => {
+                        const imageData = e.target.result;
+                        console.log(imageData);
+                    };
+                })(file);
+                reader.readAsArrayBuffer(file);
+                this.dialogShow = false
             }
-        }
+        },
     });
 </script>
 
