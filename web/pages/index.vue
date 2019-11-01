@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="area-text body-1 text-center">{{ areaName }}</p>
+    <v-chip class="text-center" color="primary" disabled outlined large>{{areaName}}</v-chip>
 
     <!-- いいねボタン -->
     <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
@@ -45,9 +45,4 @@
 </script>
 
 <style lang="scss" scoped>
-  .area-text {
-    width: 10rem;
-    background-color: rgba(229,57,53,0.5);
-    border-radius: 1em;
-  }
 </style>
