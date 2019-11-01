@@ -380,6 +380,7 @@
         height: $size;
         background-color: rgb(40, 53, 147);
         border-radius: 50%;
+        transition: ease .1s transform;
 
         &::before {
           display: block;
@@ -387,9 +388,12 @@
           width: $size * 4;
           height: $size* 4;
           border-radius: 50%;
-          background-color: rgba(57, 73, 171, .2);
+          background-color: rgba(57, 73, 171, .3);
           margin: -($size*3/2);
-          border: solid thin rgba(57, 73, 171, .4);
+          border: solid thin rgba(57, 73, 171, .6);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: 1.8s linear opacity-blink-animate infinite;
         }
       }
     }
@@ -398,5 +402,19 @@
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
     z-index: 3;
+  }
+
+  @keyframes opacity-blink-animate {
+    0% {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(180deg);
+    }
   }
 </style>
