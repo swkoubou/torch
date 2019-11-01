@@ -12,6 +12,7 @@
     "lint": "eslint --ext .ts,.js,.vue ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
     "@nuxt/typescript-runtime": "^0.2.2",
     "nuxt": "^2.0.0"
   },
