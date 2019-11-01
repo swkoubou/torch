@@ -5,22 +5,22 @@ import (
 	"github.com/swkoubou/torch/server/model/types"
 )
 
-type AllPinsModelImpl struct {
+type AllSpotsModelImpl struct {
 	db            *gorm.DB
 	hotLevelModel HotLevelModel
 }
 
-func NewAllPinsModel(db *gorm.DB, hotLevelModel HotLevelModel) AllPinsModel {
-	return &AllPinsModelImpl{
+func NewAllSpotsModel(db *gorm.DB, hotLevelModel HotLevelModel) AllSpotsModel {
+	return &AllSpotsModelImpl{
 		db:            db,
 		hotLevelModel: hotLevelModel,
 	}
 }
 
-func (model *AllPinsModelImpl) Get() (areas []types.PinInfo, err error) {
+func (model *AllSpotsModelImpl) Get() (spots []types.SpotInfo, err error) {
 	panic("implement me")
 }
 
-func (model *AllPinsModelImpl) GetWithHotLevel() (areas []types.PinInfo, err error) {
+func (model *AllSpotsModelImpl) GetWithHotLevel() (spots []types.SpotInfo, err error) {
 	panic("implement me")
 }
