@@ -30,9 +30,12 @@
         </v-btn>
 
         <!-- いいね -->
-        <v-btn fab class="ml-auto">
-          <v-icon color="primary">mdi-heart</v-icon>
-        </v-btn>
+        <div class="ml-auto">
+          <v-btn fab>
+            <v-icon color="primary">mdi-heart</v-icon>
+          </v-btn>
+          <p class="caption text-center" style="color: #888888">{{ spotFavCount }}</p>
+        </div>
       </v-flex>
 
       <div class="my-3">
@@ -63,6 +66,9 @@
             };
         },
         computed: {
+            spotFavCount(): number {
+                return 1204;
+            },
             spotName(): string {
                 //TODO: スポットの名前を返す
                 return 'test';
