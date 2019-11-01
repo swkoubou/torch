@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-chip class="text-center" color="primary" disabled outlined large>{{areaName}}</v-chip>
+    <v-btn fixed top left disabled outlined rounded large color="primary" width="10rem">{{areaName}}</v-btn>
 
     <!-- いいねボタン -->
     <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
@@ -38,7 +38,7 @@
         },
         computed: {
             areaName(): string {
-                return 'area1';
+                return 'さばんなちほー';
             }
         }
     });
