@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
+
+// 日時
+message Time {
+    int32 year = 1;
+    int32 month = 2;
+    int32 day = 3;
+
+    int32 hour = 4;
+    int32 minute = 5;
+    int32 second = 6;
+}

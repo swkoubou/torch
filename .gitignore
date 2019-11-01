@@ -7,3 +7,5 @@ docker/mariadb
 
 ### Server
 server/torch_server
+
+*.pb.go

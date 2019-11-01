@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "structs/time.proto";
+
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
+
+// 期間
+message TimeSpan {
+    Time starting_at = 1;
+    Time ending_at = 2;
+}

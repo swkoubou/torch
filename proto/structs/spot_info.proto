@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "structs/location.proto";
+import "structs/time_span.proto";
+
+package structs;
+option go_package = "github.com/swkoubou/torch/server/view/pb/messages/structs";
+
+// スポット情報
+message SpotInfo {
+    uint32 spot_id = 1; // スポットID
+    string name = 2; // 名前
+    Location location = 3; // 座標
+    string photo_file_name = 4; // 写真のファイル名
+    string description = 5; // 説明文
+    TimeSpan event_span = 6; // スポットのイベント開催時間
+
+    // double hot_score = 10; // ホット度合い(高い方がホット)
+
+    uint32 sum_like_count = 20; // いいね数
+}
