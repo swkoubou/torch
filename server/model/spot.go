@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/swkoubou/torch/server/model/types"
 )
@@ -31,7 +32,38 @@ func (model *SpotModelImpl) Get(spotID uint) (spot *types.SpotInfo, err error) {
 }
 
 func (model *SpotModelImpl) Add(spot *types.NewSpotInfo) (err error) {
-	panic("implement me")
+	// DBに追加するデータ
+	adding := &types.SpotInfo{
+		Name:        spot.Name,
+		Description: spot.Description,
+		Latitude:    spot.LocatedAt.Latitude,
+		Longitude:   spot.LocatedAt.Longitude,
+		StartingAt:  spot.StartingAt,
+		EndingAt:    spot.EndingAt,
+		AreaInfoID:  spot.AreaID,
+	}
+
+	// 画像の保存
+	photoFileName, err := model.spotPhotoModel.Add(spot.PhotoReader)
+	if err != nil {
+		return err
+	}
+	adding.PhotoFileName = photoFileName
+
+	// DBに追加
+	result := model.db.Create(adding)
+	err = result.Error
+	if err != nil {
+		errMsg := "SpotModel.Add(): " + err.Error()
+		return errors.New(errMsg)
+	}
+	affected := result.RowsAffected
+	if affected <= 0 {
+		errMsg := fmt.Sprintf("SpotModel.Add(): Spot(%s) can't be added.", adding.Name)
+		return errors.New(errMsg)
+	}
+
+	return nil
 }
 
 func (model *SpotModelImpl) Like(spotID uint) (err error) {
