@@ -228,15 +228,6 @@
             },
             updatePins() {
                 const map: any = this.$refs.map;
-                //TODO: あとで消す
-                this.testPins.push({
-                    lat: 35.48560,
-                    lon: 139.34135,
-                });
-                this.testPins.push({
-                    lat: 35.48655,
-                    lon: 139.34287,
-                });
 
                 const start = {
                     lat: 35.48832,
@@ -258,8 +249,17 @@
                 })
             },
             loadPins() {
+                //TODO: あとで消す
+                this.testPins.push({
+                    lat: 35.48560,
+                    lon: 139.34135,
+                });
+                this.testPins.push({
+                    lat: 35.48655,
+                    lon: 139.34287,
+                });
+
                 // TODO: あとでAPIに変える
-                this.testPins = [];
                 navigator.geolocation.getCurrentPosition((position) => {
                     this.testPins.push({
                         lat: position.coords.latitude,
