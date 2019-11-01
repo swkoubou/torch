@@ -21,7 +21,9 @@ clean_pb_server:
 
 ## Web
 generate_pb_web:
-	@echo "Not Implemented Yet."
+	@pbjs -t static-module -w es6 -o web/proto/web.js proto/*.proto proto/structs/*.proto
+	@pbts -o web/proto/web.d.ts web/proto/web.js
 
 clean_pb_web:
-	@echo "Not Implemented Yet."
+	@rm -rf web/proto/*.js
+	@rm -rf web/proto/*.d.ts
