@@ -7,6 +7,10 @@
       <div class="pin-parent" :style="mapStyle">
         <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"></div>
       </div>
+      <div class="user-location-parent" :style="mapStyle">
+        <div class="user-location"
+             :style="{ 'top': userLocation.y + 'px', 'left': userLocation.x + 'px' }"></div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -22,10 +26,18 @@
 
 <script lang="ts">
     import Vue from 'vue';
+    import getDistance from 'geolib/es/getDistance';
+    import getPreciseDistance from 'geolib/es/getPreciseDistance';
+    import convertDistance from 'geolib/es/convertDistance';
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
 
     interface pinInfo {
+        x: number
+        y: number
+    }
+
+    interface userLocation {
         x: number
         y: number
     }
@@ -56,6 +68,8 @@
         scaleFlag: boolean
         touches: number
         testPins: Array<any>
+        userLocation: userLocation
+        locationWatchId: any
     }
 
     export default Vue.extend({
@@ -95,6 +109,11 @@
                 scaleFlag: false,
                 touches: 0,
                 testPins: [],
+                userLocation: {
+                    x: 0,
+                    y: 0,
+                },
+                locationWatchId: 0,
             };
         },
         computed: {
@@ -145,7 +164,12 @@
                     this.scaleMeta.baseImageWidth = 0;
                     this.scaleMeta.baseImageWidth = 0;
                 }
-            })
+            });
+
+            this.watchMyLocation();
+        },
+        beforeDestroy(): void {
+            navigator.geolocation.clearWatch(this.locationWatchId);
         },
         methods: {
             makeTransformStr(x: number, y: number): string {
@@ -227,7 +251,19 @@
 
             },
             updatePins() {
+                this.pins = [];
+                this.testPins.forEach((testPin) => {
+                    const xy = this.getGeo2Px(testPin);
+                    const pxX = xy.x;
+                    const pxY = xy.y;
+                    this.pins.push({x: pxX, y: pxY});
+                })
+            },
+            getGeo2Px(testPin: object): object {
                 const map: any = this.$refs.map;
+
+                const iw = map.offsetWidth;
+                const ih = map.offsetHeight;
 
                 const start = {
                     lat: 35.48832,
@@ -238,41 +274,71 @@
                     lon: 139.34596,
                 };
 
-                const iw = map.offsetWidth;
-                const ih = map.offsetHeight;
+                const startPos = this.convertPos(start.lat, start.lon);
+                const endPos = this.convertPos(end.lat, end.lon);
+                const currentXY = this.convertPos(testPin.lat, testPin.lon);
 
-                this.pins = [];
-                this.testPins.forEach((testPin) => {
-                    const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
-                    const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
-                    this.pins.push({x: pxX, y: pxY});
-                })
+                const bx = iw / (endPos.x - startPos.x);
+                const by = ih / (endPos.y - startPos.y);
+
+                currentXY.x -= startPos.x;
+                currentXY.y -= startPos.y;
+
+                const pxX = currentXY.x * bx;
+                const pxY = currentXY.y * by;
+                return {
+                    x: pxX,
+                    y: pxY,
+                }
+            },
+            convertPos(lat: number, lon: number): any {
+                const z = 40;
+                const L = 85.05112878;
+                const pointX = Math.pow(2, (z + 7)) * ((lon / 180) + 1);
+                const pointY = Math.pow(2, (z + 7) / Math.PI) * (-1 * Math.atanh(Math.sin(lat * Math.PI / 180)) + Math.atanh(Math.sin(L * Math.PI / 180)));
+                return {
+                    x: pointX,
+                    y: pointY,
+                }
             },
             loadPins() {
                 //TODO: あとで消す
                 this.testPins.push({
-                    lat: 35.48560,
-                    lon: 139.34135,
+                    lat: 35.48755,
+                    lon: 139.34112,
                 });
                 this.testPins.push({
                     lat: 35.48655,
-                    lon: 139.34287,
+                    lon: 139.34442,
                 });
 
                 // TODO: あとでAPIに変える
+                this.updatePins();
                 navigator.geolocation.getCurrentPosition((position) => {
-                    this.testPins.push({
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude
-                    });
-                    this.updatePins();
+                    this.setUserLocation(position);
                 }, () => {
-                    this.updatePins();
                 }, {
                     enableHighAccuracy: true,
                     maximumAge: 5,
                 });
             },
+            watchMyLocation() {
+                this.locationWatchId = navigator.geolocation.watchPosition((position) => {
+                    this.setUserLocation(position);
+                });
+            },
+            setUserLocation(position: any) {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                const xy = this.getGeo2Px(userLocation);
+
+                this.userLocation = {
+                    x: xy.x,
+                    y: xy.y
+                };
+            }
         }
     })
 </script>
@@ -294,11 +360,27 @@
       top: -100%;
 
       .pin {
-        position: relative;
+        position: absolute;
         width: 8px;
         height: 8px;
+        top: 0;
+        left: 0;
         border-radius: 50%;
         background-color: red;
+      }
+    }
+
+    .user-location-parent {
+      position: relative;
+      top: -200%;
+
+      .user-location {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 25px;
+        height: 25px;
+        background-color: blue;
       }
     }
   }
