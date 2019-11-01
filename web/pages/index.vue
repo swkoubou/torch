@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div >
     <v-btn fixed top left fab outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
 
-    <v-menu offset-y fixed top right>
+    <v-menu offset-y fixed top right v-model="menuValue">
       <template v-slot:activator="{ on }">
         <v-btn fixed top right fab outlined large color="primary" v-on="on">
           <v-icon color="primary">mdi-menu</v-icon>
@@ -38,6 +38,7 @@
     </v-btn>
 
     <pin-detail></pin-detail>
+    <share-dialog></share-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -47,6 +48,7 @@
     import Vue from 'vue';
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
+    import shareDialog from "../components/shareDialog.vue";
 
     interface indexData {
         isAdmin: boolean
@@ -72,11 +74,12 @@
         mapStyle: object
         scaleFlag: boolean
         touches: number
+        menuValue: boolean
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail},
+        components: {admin, pinDetail, shareDialog},
         data(): indexData {
             return {
                 isAdmin: false,
@@ -109,6 +112,7 @@
                 },
                 scaleFlag: false,
                 touches: 0,
+                menuValue: false,
             };
         },
         created(): void {
@@ -122,6 +126,7 @@
 
             mapParent.addEventListener("touchstart", (e: any) => {
                 if (e.changedTouches.length == 1) {
+                    this.menuValue = false;
                     const touch = e.changedTouches[0];
                     this.touchStartPos = {
                         x: touch.pageX,
@@ -241,7 +246,7 @@
         computed: {
             areaName(): string {
                 return 'さばんなちほー';
-            }
+            },
         }
     })
 </script>
