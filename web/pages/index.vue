@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <v-btn fixed top left outlined rounded disabled color="accent" width="10rem" style="z-index: 3">{{areaName}}</v-btn>
 
     <v-menu offset-y fixed top right v-model="menuValue">
@@ -44,6 +44,7 @@
 
     <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
+    <help-dialog></help-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -54,6 +55,7 @@
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
+    import helpDialog from "../components/helpDialog.vue";
 
     interface pinInfo {
         x: number
@@ -93,7 +95,7 @@
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog},
+        components: {admin, pinDetail, shareDialog, helpDialog},
         data(): indexData {
             return {
                 isAdmin: false,
