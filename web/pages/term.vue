@@ -6,8 +6,8 @@
       </nuxt-link>
       <v-toolbar-title class="mx-2 mt-1">利用規約</v-toolbar-title>
     </v-app-bar>
-    <v-container id="scroll-target" style="max-height: 600px" class="overflow-y-auto">
-      <v-row v-scroll:#scroll-target="onScroll">
+    <v-container id="scroll-target" style="max-height: 90vh" class="overflow-y-auto">
+      <v-row>
         <v-card>
           <v-card-title>利用規約</v-card-title>
           <v-card-text class="caption">
