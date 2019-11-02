@@ -404,9 +404,6 @@
                 const endPos = GeoUtils.convertPos(GeoUtils.end.lat, GeoUtils.end.lon);
                 const currentXY = GeoUtils.convertPos(testPin.lat, testPin.lon);
 
-                const xxx = GeoUtils.convertPosFromPx(currentXY.x, currentXY.y);
-                console.log(currentXY.y,currentXY.x, ":",testPin, xxx);
-
                 const bx = iw / (endPos.x - startPos.x);
                 const by = ih / (endPos.y - startPos.y);
 
@@ -536,12 +533,10 @@
 
                 cx /= bx;
                 cy /= by;
-                // console.log(by, cx, cy);
                 cx += startPos.x;
                 cy += startPos.y;
 
                 const pos = GeoUtils.convertPosFromPx(cx, cy);
-                console.log(pos);
 
                 this.testPins.push({
                     lat: pos.lat,
