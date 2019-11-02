@@ -518,7 +518,7 @@
                     this.$set(this.areas[k], 'leftUp', leftUpPx);
                     this.$set(this.areas[k], 'width', w);
                     this.$set(this.areas[k], 'height', h);
-                    this.$set(this.areas[k], 'opacity', 0);
+                    this.$set(this.areas[k], 'opacity', v.hotScore / 100.0);
                 });
             }
         },
