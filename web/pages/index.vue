@@ -77,6 +77,7 @@
     import contactDialog from "../components/contactDialog.vue";
     import GeoUtils from "~/utils/geoUtils";
     import {structs} from "~/proto/web";
+    import PinUtils from "~/utils/pinUtils";
 
     interface pinInfo {
         x: number
@@ -91,6 +92,7 @@
 
     interface indexData {
         isAdmin: boolean
+        pinInfoArr: Array<structs.ISpotInfo>
         pins: Array<pinInfo>
         touchStartPos: {
             x: number
@@ -114,7 +116,6 @@
         realScale: number
         scaleFlag: boolean
         touches: number
-        testPins: Array<any>
         userLocation: userLocation
         locationWatchId: any
         userTruthLocation: any
@@ -137,6 +138,7 @@
         data(): indexData {
             return {
                 isAdmin: false,
+                pinInfoArr: [],
                 pins: [],
                 touchStartPos: {
                     x: 0,
@@ -167,7 +169,6 @@
                 realScale: 0,
                 scaleFlag: false,
                 touches: 0,
-                testPins: [],
                 userLocation: {
                     x: 0,
                     y: 0,
@@ -356,14 +357,16 @@
             },
             updatePins() {
                 this.pins = [];
-                this.testPins.forEach((testPin) => {
-                    const xy = this.getGeo2Px(testPin);
+                this.pinInfoArr.forEach((pin: structs.ISpotInfo) => {
+                    const domOps = PinUtils.convertUiPin(pin);
+
+                    const xy = this.getGeo2Px(domOps['geoPos']);
                     const pxX = xy.x;
                     const pxY = xy.y;
                     this.pins.push({
                         x: pxX,
                         y: pxY,
-                        class: testPin.class,
+                        class: domOps['class'],
                     });
                 })
             },
@@ -392,35 +395,11 @@
             },
 
             loadPins() {
-                //TODO: あとで消す
-                this.testPins.push({
-                    lat: 35.48560,
-                    lon: 139.34135,
-                    class: 'active',
-                });
-                this.testPins.push({
-                    lat: 35.48655,
-                    lon: 139.34287,
-                    class: 'disabled',
-                });
-                this.testPins.push({
-                    lat: 35.48763,
-                    lon: 139.34382,
-                    class: 'hot1',
-                });
-                this.testPins.push({
-                    lat: 35.48559,
-                    lon: 139.34436,
-                    class: 'hot2',
-                });
-                this.testPins.push({
-                    lat: 35.48625,
-                    lon: 139.34375,
-                    class: 'hot3',
+                Api.getPins().then((res) => {
+                    this.pinInfoArr = res.spotInfos;
+                    this.updatePins();
                 });
 
-                // TODO: あとでAPIに変える
-                this.updatePins();
                 navigator.geolocation.getCurrentPosition((position) => {
                     this.setUserLocation(position);
                 }, () => {

@@ -26,4 +26,16 @@ export default class Api {
       return messages.AllAreaInfoResponse.decode(_buf);
     })
   }
+
+  static getPins(): Promise<messages.AllSpotsResponse> {
+    const u = this.getUrl('/spotInfo/get/all');
+    return fetch(u, {
+      method: 'GET',
+    }).then(res => {
+      return res.arrayBuffer();
+    }).then((buf: ArrayBuffer) => {
+      const _buf = new Uint8Array(buf);
+      return messages.AllSpotsResponse.decode(_buf);
+    })
+  }
 }
