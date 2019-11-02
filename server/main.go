@@ -26,6 +26,13 @@ func main() {
 		return
 	}
 
+	// オートマイグレーション
+	err = Migrate(db)
+	if err != nil {
+		e.Logger.Fatal("Can't migrate models to db.", err)
+		return
+	}
+
 	// ルーティング
 	err = Route(e, db)
 	if err != nil {
