@@ -26,7 +26,7 @@ type LikeAreaPbView interface {
 }
 
 // スポットへのいいねを行う
-type LikeSpotPbViewModel interface {
+type LikeSpotPbView interface {
 	// POSTのハンドラー
 	GetPOSTHandler(ctx echo.Context, pb proto.Message) (message proto.Message, err error)
 	// POSTで受け取る proto.Message を埋め込んだ構造体を返す
