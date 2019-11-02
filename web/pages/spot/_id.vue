@@ -1,70 +1,69 @@
 <template>
   <div>
-    <v-dialog fullscreen v-model="dialog">
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="dialogClose">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ pinName }}の情報</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="dialogClose">閉じる</v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
+    <v-app-bar app color="primary" dark>
+      <v-btn icon dark @click="close">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      <v-toolbar-title>{{ pinName }}の情報</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn dark text @click="close">閉じる</v-btn>
+      </v-toolbar-items>
+    </v-app-bar>
 
-        <v-img height="300" :src="pinImageUrl"></v-img>
+    <v-container id="scroll-target" style="max-height: 90vh" class="overflow-y-auto">
+      <v-row>
+        <v-card>
+          <v-img height="300" :src="pinImageUrl"></v-img>
+        </v-card>
 
-        <v-flex class="d-flex px-2 mt-4 mb-2">
-          <!-- 各種SNSシェア -->
-          <v-btn fab class="mx-1" @click="shareTwitter">
-            <v-icon color="#00acee">mdi-twitter</v-icon>
-          </v-btn>
-          <v-btn fab class="mx-1" @click="shareFaceBook">
-            <v-icon color="#3B5998">mdi-facebook</v-icon>
-          </v-btn>
-          <v-btn fab class="mx-1" @click="shareLine">
-            <v-icon color="#1dcd00">fab fa-line</v-icon>
-          </v-btn>
-
-          <!-- いいね -->
-          <div class="ml-auto">
-            <v-btn fab>
-              <v-icon color="primary">mdi-heart</v-icon>
+        <v-card flat>
+          <v-flex class="d-flex mt-4 mb-2">
+            <!-- 各種SNSシェア -->
+            <v-btn fab class="mx-1" @click="shareTwitter">
+              <v-icon color="#00acee">mdi-twitter</v-icon>
             </v-btn>
-            <p class="caption text-center" style="color: #888888">{{ pinFavCount }}</p>
+            <v-btn fab class="mx-1" @click="shareFaceBook">
+              <v-icon color="#3B5998">mdi-facebook</v-icon>
+            </v-btn>
+            <v-btn fab class="mx-1" @click="shareLine">
+              <v-icon color="#1dcd00">fab fa-line</v-icon>
+            </v-btn>
+
+            <!-- いいね -->
+            <div class="ml-auto">
+              <v-btn fab>
+                <v-icon color="primary">mdi-heart</v-icon>
+              </v-btn>
+              <p class="caption text-center" style="color: #888888">{{ pinFavCount }}</p>
+            </div>
+          </v-flex>
+
+          <div class="my-3">
+            <pre class="text-wrap">{{ pinDetailText }}</pre>
           </div>
-        </v-flex>
+        </v-card>
 
-        <div class="my-3 px-3">
-          <pre class="text-wrap">{{ pinDetailText }}</pre>
-        </div>
+        <v-card flat>
+          <!-- ユーザー投稿欄 -->
+          <div>
 
-        <!-- ユーザー投稿欄 -->
-        <div>
-
-        </div>
-      </v-card>
-    </v-dialog>
+          </div>
+        </v-card>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
 
-    interface pinDetailInterface {
-        dialog: boolean
-    }
-
     export default Vue.extend({
-        name: 'pinDetail',
-        data(): pinDetailInterface {
-            return {
-                // TODO: DEBUG用
-                dialog: false
-            };
-        },
+        name: "_id",
         computed: {
+            id() {
+                return this.$route.params['id'];
+            },
             pinFavCount(): number {
                 return 1204;
             },
@@ -83,8 +82,8 @@
             }
         },
         methods: {
-            dialogClose(): void {
-                this.dialog = false;
+            close(): void {
+                this.$router.push('/');
             },
             shareTwitter(): void {
                 // TODO: なんかいい感じのテキストを....
@@ -99,7 +98,7 @@
             shareLine(): void {
                 // TODO: なんかいい感じのテキストを....
                 let text = 'Torchはじめました\nよろしく\nにゃーん\n'
-                let message = encodeURIComponent(text +'torch.swkoubou.com');
+                let message = encodeURIComponent(text + 'torch.swkoubou.com');
                 let shareURL = `http://line.me/R/msg/text/?${message}`;
                 open(shareURL, "_blank");
             }
@@ -107,6 +106,6 @@
     });
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 
 </style>

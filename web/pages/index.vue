@@ -57,7 +57,6 @@
       <v-icon color="primary">mdi-heart</v-icon>
     </v-btn>
 
-    <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
     <help-dialog v-model="helpFlag"></help-dialog>
     <contact-dialog v-model="contactFlag"></contact-dialog>
@@ -69,7 +68,6 @@
 <script lang="ts">
     import Vue from 'vue';
     import admin from '../components/admin.vue';
-    import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
     import Api from "~/module/api";
@@ -133,7 +131,7 @@
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog, helpDialog, contactDialog},
+        components: {admin, shareDialog, helpDialog, contactDialog},
         data(): indexData {
             return {
                 isAdmin: false,
