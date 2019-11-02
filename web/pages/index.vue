@@ -516,24 +516,9 @@
       display: block;
     }
 
-    .area-range {
-      position: relative;
-      top: -100%;
-
-      .area-rect {
-        position: absolute;
-        overflow: hidden;
-        font-size: 8px;
-        border-radius: 50%;
-        border: solid 1px rgba(red, .3);
-        background-color: rgba(red, .1);
-      }
-    }
-
-
     .user-location-parent {
       position: relative;
-      top: -200%;
+      top: -100%;
 
       .user-location {
         $size: 15px;
@@ -561,6 +546,21 @@
         }
       }
     }
+
+    .area-range {
+      position: relative;
+      top: -200%;
+
+      .area-rect {
+        position: absolute;
+        overflow: hidden;
+        font-size: 8px;
+        border-radius: 50%;
+        border: solid 1px rgba(red, .3);
+        background-color: rgba(red, .1);
+      }
+    }
+
 
     .pin-parent {
       position: relative;
