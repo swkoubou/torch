@@ -41,7 +41,13 @@
         height: a.height + 'px',
         opacity: a.opacity ,
         }"></div>
+
+        <div class="like-effect" v-for="i in likeEffects" :key="i.createdTime"
+             :style="{ 'top': i.y + 'px', 'left': i.x + 'px' }">
+          <v-icon color="primary">mdi-heart</v-icon>
+        </div>
       </div>
+
       <div class="pin-parent" ref="map-action" :style="mapStyle">
         <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"
              v-on:touchstart="showDetail(p)">
@@ -53,7 +59,7 @@
     </div>
 
     <!-- いいねボタン -->
-    <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
+    <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin" v-on:touchstart="sendLike">
       <v-icon color="primary">mdi-heart</v-icon>
     </v-btn>
 
@@ -127,6 +133,7 @@
             area: structs.AreaInfo | undefined
         },
         adminLocation: userLocation
+        likeEffects: Array<any>
     }
 
     export default Vue.extend({
@@ -188,7 +195,8 @@
                 adminLocation: {
                     x: 0,
                     y: 0,
-                }
+                },
+                likeEffects: []
             };
         },
         computed: {
@@ -202,6 +210,17 @@
                     return defaultName;
                 } else {
                     return info.name;
+                }
+            },
+            currentAreaId(): number | undefined {
+                const userLat = this.userTruthLocation.lat;
+                const userLon = this.userTruthLocation.lon;
+
+                const info = GeoUtils.containArea(this.areas, userLat, userLon);
+                if (typeof info === "undefined") {
+                    return undefined;
+                } else {
+                    return info.areaId;
                 }
             }
         },
@@ -499,7 +518,37 @@
             showDetail(pin: any) {
                 const id = pin['id'];
                 this.$router.push('/spot/' + id);
-            }
+            },
+            sendLike() {
+                const areaId = this.currentAreaId;
+                if (typeof areaId === "undefined") {
+                    return;
+                }
+
+                const now = new Date().getTime();
+                let e = {
+                    createdTime: now,
+                    x: this.userLocation.x,
+                    y: this.userLocation.y,
+                };
+                this.likeEffects.push(e);
+
+                if(this.likeEffects.length > 300) {
+                    let deleteKeys = Array<number>();
+                    this.likeEffects.forEach((v, index) => {
+                        const isDelete = now - v.createdTime > 800;
+                        if (isDelete) {
+                            deleteKeys.push(index);
+                        }
+                    });
+                    deleteKeys.forEach((i) => {
+                        this.$delete(this.likeEffects, i);
+                    });
+                }
+                Api.areaLike(areaId).then(res => {
+                    // 失敗時の処理？
+                })
+            },
         },
     })
 </script>
@@ -558,6 +607,26 @@
         border-radius: 50%;
         border: solid 1px rgba(red, .3);
         background-color: rgba(red, .1);
+      }
+
+      .like-effect {
+        display: flex;
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        top: 200px;
+        left: 200px;
+        margin: -100px;
+        border: solid 1px rgba(red, .5);
+        background-color: rgba(red, .15);
+        justify-content: center;
+        align-items: center;
+        animation: 0.5s ease like-effect forwards;
+
+        i {
+          font-size: 120px;
+        }
       }
     }
 
@@ -661,6 +730,26 @@
     }
     100% {
       border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @keyframes like-effect {
+    0% {
+      transform: scale(0.2) rotate(80deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    65% {
+      opacity: 1;
+    }
+    80% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0;
     }
   }
 </style>

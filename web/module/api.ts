@@ -55,4 +55,21 @@ export default class Api {
       return messages.SpotInfoResponse.decode(_buf);
     })
   }
+
+  static areaLike(areaId: number): Promise<messages.AreaLikeResponse> {
+    const req = new messages.AreaLikeRequest();
+    req.areaId = areaId;
+    const bin = messages.AreaLikeRequest.encode(req).finish();
+
+    const u = this.getUrl('/areaInfo/like');
+    return fetch(u, {
+      method: 'POST',
+      body: bin,
+    }).then(res => {
+      return res.arrayBuffer();
+    }).then((buf: ArrayBuffer) => {
+      const _buf = new Uint8Array(buf);
+      return messages.AreaLikeResponse.decode(_buf);
+    })
+  }
 }
