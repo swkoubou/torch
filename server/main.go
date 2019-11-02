@@ -33,6 +33,9 @@ func main() {
 		return
 	}
 
+	// エリア情報の追加
+	Prepare(db)
+
 	// ルーティング
 	err = Route(e, db)
 	if err != nil {
