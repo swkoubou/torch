@@ -1,7 +1,6 @@
 package pb
 
 import (
-	. "github.com/ahmetb/go-linq"
 	"github.com/swkoubou/torch/server/model/types"
 	"github.com/swkoubou/torch/server/view/pb/messages"
 	"github.com/swkoubou/torch/server/view/pb/messages/structs"
@@ -52,12 +51,10 @@ func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsResponse {
 	var pbSpotInfos []*structs.SpotInfo
 
-	From(areaInfos).
-		Select(func(a interface{}) interface{} {
-			spot := a.(types.SpotInfo)
-			return ToPbSpotInfo(&spot)
-		}).
-		ToSlice(pbSpotInfos)
+	for _, v := range areaInfos {
+		pbSpotInfo := ToPbSpotInfo(&v)
+		pbSpotInfos = append(pbSpotInfos, pbSpotInfo)
+	}
 
 	return &messages.AllSpotsResponse{
 		SpotInfos: pbSpotInfos,
