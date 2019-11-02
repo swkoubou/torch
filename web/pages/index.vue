@@ -16,7 +16,7 @@
           <v-list-item-title>シェア</v-list-item-title>
         </v-list-item>
         <v-divider></v-divider>
-        <v-list-item>
+        <v-list-item @click="contactFlag = true">
           <v-list-item-title>問い合わせ</v-list-item-title>
         </v-list-item>
         <v-list-item>
@@ -49,6 +49,7 @@
     <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
     <help-dialog v-model="helpFlag"></help-dialog>
+    <contact-dialog v-model="contactFlag"></contact-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -60,6 +61,7 @@
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
+    import contactDialog from "../components/contactDialog.vue";
 
     interface pinInfo {
         x: number
@@ -104,11 +106,12 @@
         menuValue: boolean
         shareFlag: boolean
         helpFlag: boolean
+        contactFlag: boolean
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog, helpDialog},
+        components: {admin, pinDetail, shareDialog, helpDialog, contactDialog},
         data(): indexData {
             return {
                 isAdmin: false,
@@ -155,6 +158,7 @@
                 menuValue: false,
                 shareFlag: false,
                 helpFlag: false,
+                contactFlag: false,
             };
         },
         computed: {
