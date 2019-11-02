@@ -309,7 +309,7 @@
 
             this.watchMyLocation();
         },
-        watch:{
+        watch: {
             errorDialog(val) {
                 if (!val && this.errorMessage !== "") {
                     this.errorMessage = "";
@@ -447,6 +447,8 @@
                 Api.getPins().then((res) => {
                     this.pinInfoArr = res.spotInfos;
                     this.updatePins();
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
                 });
 
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -488,6 +490,8 @@
                 Api.getAreas().then(res => {
                     this.areas = res.areaInfos;
                     this.updateAreas();
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
                 });
             },
             updateAreas() {
@@ -585,7 +589,7 @@
                 Api.areaLike(areaId).then(res => {
                     if (res.message !== 'success') {
                         this.errorMessage = '不明なエラーです'
-                    }else{
+                    } else {
                         this.loadParams();
                     }
                 }).catch(() => {
