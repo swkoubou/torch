@@ -4,6 +4,7 @@
 
 ### Docker
 docker/mariadb
+server/assets/spots
 
 ### Server
 server/torch_server
@@ -12,5 +13,4 @@ server/torch_server
 *.pb.go
 
 web/proto/*
-
 /dist/

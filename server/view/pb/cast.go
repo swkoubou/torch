@@ -1,7 +1,6 @@
 package pb
 
 import (
-	. "github.com/ahmetb/go-linq"
 	"github.com/swkoubou/torch/server/model/types"
 	"github.com/swkoubou/torch/server/view/pb/messages"
 	"github.com/swkoubou/torch/server/view/pb/messages/structs"
@@ -20,12 +19,10 @@ func ToSpotInfoResponse(spotInfo *types.SpotInfo) *messages.SpotInfoResponse {
 func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResponse {
 	var pbAreaInfos []*structs.AreaInfo
 
-	From(areaInfos).
-		Select(func(a interface{}) interface{} {
-			area := a.(types.AreaInfo)
-			return ToPbAreaInfo(&area)
-		}).
-		ToSlice(pbAreaInfos)
+	for _, v := range areaInfos {
+		pbArea := ToPbAreaInfo(&v)
+		pbAreaInfos = append(pbAreaInfos, pbArea)
+	}
 
 	return &messages.AllAreaInfoResponse{
 		AreaInfos: pbAreaInfos,
@@ -54,12 +51,10 @@ func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsResponse {
 	var pbSpotInfos []*structs.SpotInfo
 
-	From(areaInfos).
-		Select(func(a interface{}) interface{} {
-			spot := a.(types.SpotInfo)
-			return ToPbSpotInfo(&spot)
-		}).
-		ToSlice(pbSpotInfos)
+	for _, v := range areaInfos {
+		pbSpotInfo := ToPbSpotInfo(&v)
+		pbSpotInfos = append(pbSpotInfos, pbSpotInfo)
+	}
 
 	return &messages.AllSpotsResponse{
 		SpotInfos: pbSpotInfos,
@@ -68,6 +63,7 @@ func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsRespons
 
 func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 	return &structs.SpotInfo{
+		SpotId:        uint32(spotInfo.ID),
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,

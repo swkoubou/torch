@@ -37,7 +37,7 @@ func (model *LikeSpotModelImpl) Like(spotID uint) (err error) {
 }
 
 func (model *LikeSpotModelImpl) CountLikes(spotID uint) (count uint, err error) {
-	result := model.db.Where("id = ?", spotID).Count(&count)
+	result := model.db.Model(&types.LikeSpot{}).Where("id = ?", spotID).Count(&count)
 	err = result.Error
 	if err != nil {
 		errMsg := "LikeSpotModel.CountLikes(): " + err.Error()

@@ -6,6 +6,7 @@ import (
 	"github.com/swkoubou/torch/server/lib/pbrouter"
 	"github.com/swkoubou/torch/server/model"
 	"github.com/swkoubou/torch/server/view/pb"
+	"github.com/swkoubou/torch/server/view/rest"
 	"net/http"
 )
 
@@ -22,6 +23,7 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 	allSpotsModel := model.NewAllSpotsModel(db, hotLevelModel)
 	allAreasModel := model.NewAllAreasModel(db, hotLevelModel, allSpotsModel)
 
+	spotInfoView := rest.NewSpotInfoRESTView(spotModel)
 	spotInfoPbView := pb.NewSpotInfoPbView(spotModel)
 	allAreaInfoPbView := pb.NewAllAreasPbView(allAreasModel)
 	allSpotInfoPbView := pb.NewAllSpotsPbView(allSpotsModel)
@@ -33,6 +35,8 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+
+	e.POST("/spotInfo/create", spotInfoView.GetPUTHandler)
 
 	// Protocol Buffersルーターによるルーティング
 	pbRouter := pbrouter.NewProtocolBufferRouterByRouter(e)

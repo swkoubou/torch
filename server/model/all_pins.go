@@ -22,7 +22,7 @@ func (model *AllSpotsModelImpl) Get() (spots []types.SpotInfo, err error) {
 	// スポット情報の取得
 	spots = []types.SpotInfo{}
 
-	result := model.db.Preload("Area").Find(&spots)
+	result := model.db.Preload("AreaInfo").Find(&spots)
 	err = result.Error
 	if err != nil {
 		return nil, errors.New("AllSpotsModel.Get(): " + err.Error())

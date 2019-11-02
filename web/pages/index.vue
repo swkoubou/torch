@@ -30,14 +30,25 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
-      <div class="pin-parent" :style="mapStyle">
-        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
-          <v-icon :class="p.class">mdi-map-marker</v-icon>
-        </div>
-      </div>
       <div class="user-location-parent" :style="mapStyle">
         <div class="user-location"
              :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
+      </div>
+      <div class="area-range" :style="mapStyle">
+        <div class="area-rect" v-for="a in areas" :style="{
+        transform: 'translate('+a.leftUp.x + 'px, '+a.leftUp.y + 'px)',
+        width: a.width + 'px',
+        height: a.height + 'px',
+        opacity: a.opacity ,
+        }"></div>
+      </div>
+      <div class="pin-parent" ref="map-action" :style="mapStyle">
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"
+             v-on:touchstart="showDetail(p)">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
+        <div class="pin admin-pin" v-if="isAdmin"
+             :style="{ 'top': adminLocation.y + 'px', 'left': adminLocation.x + 'px' }"></div>
       </div>
     </div>
 
@@ -46,22 +57,24 @@
       <v-icon color="primary">mdi-heart</v-icon>
     </v-btn>
 
-    <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
     <help-dialog v-model="helpFlag"></help-dialog>
     <contact-dialog v-model="contactFlag"></contact-dialog>
 
-    <admin v-if="isAdmin"></admin>
+    <admin v-if="isAdmin" v-model="adminLatAndLon"></admin>
   </div>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import admin from '../components/admin.vue';
-    import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
+    import Api from "~/module/api";
     import contactDialog from "../components/contactDialog.vue";
+    import GeoUtils from "~/utils/geoUtils";
+    import {structs} from "~/proto/web";
+    import PinUtils from "~/utils/pinUtils";
 
     interface pinInfo {
         x: number
@@ -76,6 +89,7 @@
 
     interface indexData {
         isAdmin: boolean
+        pinInfoArr: Array<structs.ISpotInfo>
         pins: Array<pinInfo>
         touchStartPos: {
             x: number
@@ -99,22 +113,29 @@
         realScale: number
         scaleFlag: boolean
         touches: number
-        testPins: Array<any>
         userLocation: userLocation
         locationWatchId: any
         userTruthLocation: any
         menuValue: boolean
         shareFlag: boolean
         helpFlag: boolean
+        areas: Array<any>
         contactFlag: boolean
+        adminLatAndLon: {
+            lat: number
+            lonL: number
+            area: structs.AreaInfo | undefined
+        },
+        adminLocation: userLocation
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog, helpDialog, contactDialog},
+        components: {admin, shareDialog, helpDialog, contactDialog},
         data(): indexData {
             return {
                 isAdmin: false,
+                pinInfoArr: [],
                 pins: [],
                 touchStartPos: {
                     x: 0,
@@ -145,7 +166,6 @@
                 realScale: 0,
                 scaleFlag: false,
                 touches: 0,
-                testPins: [],
                 userLocation: {
                     x: 0,
                     y: 0,
@@ -159,11 +179,30 @@
                 shareFlag: false,
                 helpFlag: false,
                 contactFlag: false,
+                areas: [],
+                adminLatAndLon: {
+                    lat: 0,
+                    lonL: 0,
+                    area: undefined
+                },
+                adminLocation: {
+                    x: 0,
+                    y: 0,
+                }
             };
         },
         computed: {
             areaName(): string {
-                return 'さばんなちほー';
+                const defaultName = '未開の地';
+                const userLat = this.userTruthLocation.lat;
+                const userLon = this.userTruthLocation.lon;
+
+                const info = GeoUtils.containArea(this.areas, userLat, userLon);
+                if (typeof info === "undefined") {
+                    return defaultName;
+                } else {
+                    return info.name;
+                }
             }
         },
         created(): void {
@@ -173,11 +212,12 @@
             }
 
             this.helpFlag = localStorage.getItem('help-dialog') != 'true';
+            this.loadAreas();
         },
         mounted() {
-            const mapParent: any = this.$refs['map-parent'];
+            const mapAction: any = this.$refs['map-action'];
 
-            mapParent.addEventListener("touchstart", (e: any) => {
+            mapAction.addEventListener("touchstart", (e: any) => {
                 if (e.changedTouches.length == 1) {
                     this.menuValue = false;
                     const touch = e.changedTouches[0];
@@ -193,9 +233,9 @@
                 this.scaleFlag = this.touches > 1;
 
                 e.preventDefault();
-            });
+            }, false);
 
-            mapParent.addEventListener("touchmove", (e: any) => {
+            mapAction.addEventListener("touchmove", (e: any) => {
                 const touches = e.changedTouches;
                 if (touches.length == 1 && !this.scaleFlag) {
                     this.mapMoveEventHandler(touches);
@@ -203,16 +243,28 @@
                     this.mapScaleEventHandler(touches);
                 }
                 e.preventDefault();
-            });
+            }, false);
 
-            mapParent.addEventListener('touchend', (e: any) => {
+            mapAction.addEventListener('touchend', (e: any) => {
                 this.touches -= e.changedTouches.length;
                 if (this.touches == 0) {
                     this.scaleMeta.beseDistance = 0;
                     this.scaleMeta.baseImageWidth = 0;
                     this.scaleMeta.baseImageWidth = 0;
                 }
-            });
+            }, false);
+
+            if (this.isAdmin) {
+                mapAction.addEventListener("touchstart", (e: any) => {
+                    if (e.changedTouches.length == 1) {
+                        const touch = e.changedTouches[0];
+                        this.getMapPosHandler(touch.clientX, touch.clientY);
+                    }
+                });
+                mapAction.addEventListener("mousedown", (e: any) => {
+                    this.getMapPosHandler(e.clientX, e.clientY);
+                });
+            }
 
             this.watchMyLocation();
         },
@@ -252,6 +304,7 @@
                     this.realScale = truthScale;
                     this.updatePins();
                     this.updateUserLocation(this.userTruthLocation);
+                    this.updateAreas();
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -301,14 +354,17 @@
             },
             updatePins() {
                 this.pins = [];
-                this.testPins.forEach((testPin) => {
-                    const xy = this.getGeo2Px(testPin);
+                this.pinInfoArr.forEach((pin: structs.ISpotInfo) => {
+                    const domOps = PinUtils.convertUiPin(pin);
+
+                    const xy = this.getGeo2Px(domOps['geoPos']);
                     const pxX = xy.x;
                     const pxY = xy.y;
                     this.pins.push({
+                        id: domOps['id'],
                         x: pxX,
                         y: pxY,
-                        class: testPin.class,
+                        class: domOps['class'],
                     });
                 })
             },
@@ -318,18 +374,9 @@
                 const iw = map.offsetWidth;
                 const ih = map.offsetHeight;
 
-                const start = {
-                    lat: 35.48832,
-                    lon: 139.34024,
-                };
-                const end = {
-                    lat: 35.48491,
-                    lon: 139.34596,
-                };
-
-                const startPos = this.convertPos(start.lat, start.lon);
-                const endPos = this.convertPos(end.lat, end.lon);
-                const currentXY = this.convertPos(testPin.lat, testPin.lon);
+                const startPos = GeoUtils.convertPos(GeoUtils.start.lat, GeoUtils.start.lon);
+                const endPos = GeoUtils.convertPos(GeoUtils.end.lat, GeoUtils.end.lon);
+                const currentXY = GeoUtils.convertPos(testPin.lat, testPin.lon);
 
                 const bx = iw / (endPos.x - startPos.x);
                 const by = ih / (endPos.y - startPos.y);
@@ -344,46 +391,13 @@
                     y: pxY,
                 }
             },
-            convertPos(lat: number, lon: number): any {
-                const z = 40;
-                const L = 85.05112878;
-                const pointX = Math.pow(2, (z + 7)) * ((lon / 180) + 1);
-                const pointY = Math.pow(2, (z + 7) / Math.PI) * (-1 * Math.atanh(Math.sin(lat * Math.PI / 180)) + Math.atanh(Math.sin(L * Math.PI / 180)));
-                return {
-                    x: pointX,
-                    y: pointY,
-                }
-            },
+
             loadPins() {
-                //TODO: あとで消す
-                this.testPins.push({
-                    lat: 35.48560,
-                    lon: 139.34135,
-                    class: 'active',
-                });
-                this.testPins.push({
-                    lat: 35.48655,
-                    lon: 139.34287,
-                    class: 'disabled',
-                });
-                this.testPins.push({
-                    lat: 35.48763,
-                    lon: 139.34382,
-                    class: 'hot1',
-                });
-                this.testPins.push({
-                    lat: 35.48559,
-                    lon: 139.34436,
-                    class: 'hot2',
-                });
-                this.testPins.push({
-                    lat: 35.48625,
-                    lon: 139.34375,
-                    class: 'hot3',
+                Api.getPins().then((res) => {
+                    this.pinInfoArr = res.spotInfos;
+                    this.updatePins();
                 });
 
-                // TODO: あとでAPIに変える
-                this.updatePins();
                 navigator.geolocation.getCurrentPosition((position) => {
                     this.setUserLocation(position);
                 }, () => {
@@ -419,6 +433,73 @@
             changeShare() {
                 this.shareFlag = !this.shareFlag;
             },
+            loadAreas() {
+                Api.getAreas().then(res => {
+                    this.areas = res.areaInfos;
+                    this.updateAreas();
+                });
+            },
+            updateAreas() {
+                this.areas.forEach((v: any, k: number) => {
+                    const leftUp = v.region.leftUp;
+                    const leftUpPx = this.getGeo2Px({
+                        lat: leftUp.latitude,
+                        lon: leftUp.longitude
+                    });
+                    const rightBottom = v.region.rightBottom;
+                    const rightBottomPx = this.getGeo2Px({
+                        lat: rightBottom.latitude,
+                        lon: rightBottom.longitude
+                    });
+
+                    let w = rightBottomPx.x - leftUpPx.x;
+                    let h = rightBottomPx.y - leftUpPx.y;
+                    if (w > h) {
+                        h = w;
+                    } else {
+                        w = h;
+                    }
+
+                    this.$set(this.areas[k], 'leftUp', leftUpPx);
+                    this.$set(this.areas[k], 'width', w);
+                    this.$set(this.areas[k], 'height', h);
+                    this.$set(this.areas[k], 'opacity', v.hotScore / 100.0);
+                });
+            },
+            getMapPosHandler(x: number, y: number) {
+                const map: any = this.$refs.map;
+
+                const startPos = GeoUtils.convertPos(GeoUtils.start.lat, GeoUtils.start.lon);
+                const endPos = GeoUtils.convertPos(GeoUtils.end.lat, GeoUtils.end.lon);
+
+                let cx = x - this.touchStartPos.backPosX;
+                let cy = y - this.touchStartPos.backPosY;
+
+                let iw = map.offsetWidth;
+                let ih = map.offsetHeight;
+
+                const bx = iw / (endPos.x - startPos.x);
+                const by = ih / (endPos.y - startPos.y);
+
+                cx /= bx;
+                cy /= by;
+                cx += startPos.x;
+                cy += startPos.y;
+
+                const pos = GeoUtils.convertPosFromPx(cx, cy);
+
+                this.$set(this.adminLatAndLon, 'lat', pos.lat);
+                this.$set(this.adminLatAndLon, 'lon', pos.lon);
+                this.$set(this.adminLatAndLon, 'area', GeoUtils.containArea(this.areas, pos.lat, pos.lon));
+                this.adminLocation = {
+                    x: x - this.touchStartPos.backPosX,
+                    y: y - this.touchStartPos.backPosY,
+                };
+            },
+            showDetail(pin: any) {
+                const id = pin['id'];
+                this.$router.push('/spot/' + id);
+            }
         },
     })
 </script>
@@ -435,9 +516,55 @@
       display: block;
     }
 
-    .pin-parent {
+    .user-location-parent {
       position: relative;
       top: -100%;
+
+      .user-location {
+        $size: 15px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        background-color: rgb(40, 53, 147);
+        border-radius: 50%;
+        transition: ease .1s transform;
+
+        &::before {
+          display: block;
+          content: '';
+          width: $size * 4;
+          height: $size* 4;
+          border-radius: 50%;
+          background-color: rgba(57, 73, 171, .3);
+          margin: -($size*3/2);
+          border: solid thin rgba(57, 73, 171, .6);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: 1.8s linear opacity-blink-animate infinite;
+        }
+      }
+    }
+
+    .area-range {
+      position: relative;
+      top: -200%;
+
+      .area-rect {
+        position: absolute;
+        overflow: hidden;
+        font-size: 8px;
+        border-radius: 50%;
+        border: solid 1px rgba(red, .3);
+        background-color: rgba(red, .1);
+      }
+    }
+
+
+    .pin-parent {
+      position: relative;
+      top: -300%;
 
       .pin {
         $size: 30px;
@@ -484,36 +611,12 @@
           }
         }
       }
-    }
 
-    .user-location-parent {
-      position: relative;
-      top: -200%;
-
-      .user-location {
-        $size: 15px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: $size;
-        height: $size;
-        background-color: rgb(40, 53, 147);
-        border-radius: 50%;
-        transition: ease .1s transform;
-
-        &::before {
-          display: block;
-          content: '';
-          width: $size * 4;
-          height: $size* 4;
-          border-radius: 50%;
-          background-color: rgba(57, 73, 171, .3);
-          margin: -($size*3/2);
-          border: solid thin rgba(57, 73, 171, .6);
-          border-left-color: transparent;
-          border-right-color: transparent;
-          animation: 1.8s linear opacity-blink-animate infinite;
-        }
+      .admin-pin {
+        width: 15px;
+        height: 15px;
+        transform: translate(-50%, -50%);
+        background-color: rgba(red, .8);
       }
     }
   }
