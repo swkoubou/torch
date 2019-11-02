@@ -42,7 +42,7 @@ func ToSpotInfoResponse(spotInfo *types.SpotInfo) *messages.SpotInfoResponse {
 	}
 }
 
-func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaIDsResponse {
+func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResponse {
 	var pbAreaInfos []*structs.AreaInfo
 
 	From(areaInfos).
@@ -52,7 +52,7 @@ func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaIDsRespo
 		}).
 		ToSlice(pbAreaInfos)
 
-	return &messages.AllAreaIDsResponse{
+	return &messages.AllAreaInfoResponse{
 		AreaInfos: pbAreaInfos,
 	}
 }

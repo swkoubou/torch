@@ -17,7 +17,7 @@ func NewAllAreasPbView(allAreasModel model.AllAreasModel) view.AllAreasPbView {
 
 func (view *AllAreasPbViewImpl) GetGETHandler(ctx echo.Context) (message proto.Message, err error) {
 	// モデルに投げる
-	founds, err := view.allAreasModel.Get()
+	founds, err := view.allAreasModel.GetWithHotLevel()
 	if err != nil {
 		return nil, err
 	}
