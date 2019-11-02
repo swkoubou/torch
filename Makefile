@@ -12,12 +12,13 @@ clean_pb:
 
 ## Server
 generate_pb_server:
-	@protoc --proto_path ./proto --go_out=$(GOPATH)/src proto/*.proto
-	@protoc --proto_path ./proto --go_out=$(GOPATH)/src proto/structs/*.proto
+	@protoc --proto_path ./proto --go_out=server/view/pb proto/*.proto
+	@protoc --proto_path ./proto --go_out=server/view/pb proto/structs/*.proto
+	@mv server/view/pb/github.com/swkoubou/torch/server/view/pb/messages server/view/pb
+	@rm -rf server/view/pb/github.com
 
 clean_pb_server:
-	@rm -rf ./server/view/pb/messages/*.pb.go
-	@rm -rf ./server/view/pb/messages/structs/*.pb.go
+	@rm -rf ./server/view/pb/messages/*
 
 ## Web
 generate_pb_web:
