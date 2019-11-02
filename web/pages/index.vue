@@ -9,7 +9,7 @@
       </div>
       <div class="user-location-parent" :style="mapStyle">
         <div class="user-location"
-             :style="{ 'top': userLocation.y + 'px', 'left': userLocation.x + 'px' }"></div>
+             :style="{ 'transform': 'translate('+userLocation.y + 'px, '+ userLocation.x + 'px)' }"></div>
       </div>
     </div>
 
