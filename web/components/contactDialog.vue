@@ -9,7 +9,7 @@
 
         <v-card-actions>
           <v-flex xs3 offset-xs9 align-end>
-            <v-btn class="ml-auto" color="accent" right>閉じる</v-btn>
+            <v-btn class="ml-auto" color="accent" right @click="dialog = false">閉じる</v-btn>
           </v-flex>
         </v-card-actions>
       </v-card>
