@@ -99,13 +99,16 @@
         props: ['value'],
         data(): helpDialogInterface {
             return {
-                dialog: true,
+                dialog: false,
                 circleStatus: 0
             }
         },
         watch: {
             dialog(value: boolean) {
                 this.$emit('input', value);
+                if (!value) {
+                    this.closeModalEvent();
+                }
             },
             value(value: boolean) {
                 this.dialog = value;
@@ -121,7 +124,13 @@
         methods: {
             closeModal() {
                 this.dialog = false;
+            },
+            closeModalEvent() {
+                localStorage.setItem('help-dialog', 'true');
             }
+        },
+        mounted(): void {
+            this.dialog = this.value;
         }
     });
 </script>

@@ -146,6 +146,8 @@
             if ('admin' in query) {
                 this.isAdmin = query['admin'] === 'hoo0Jaek8jooTeeti0eiciedeithougee4aexooGhaiNgieDa9gio6jaipeevach';
             }
+
+            this.helpFlag = localStorage.getItem('help-dialog') != 'true';
         },
         mounted() {
             const mapParent: any = this.$refs['map-parent'];
