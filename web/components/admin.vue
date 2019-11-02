@@ -40,7 +40,7 @@
             <v-textarea label="説明" v-model="description"></v-textarea>
 
             <v-col class="text-right" cols="12" sm="4">
-              <v-btn color="accent">SAVE</v-btn>
+              <v-btn color="accent" @click="save">SAVE</v-btn>
             </v-col>
           </v-form>
         </v-card-text>
