@@ -80,6 +80,7 @@
         info: structs.ISpotInfo | undefined
         errorMessage: string
         errorDialog: boolean
+        poolingTimer: any
     }
 
     export default Vue.extend({
@@ -88,7 +89,8 @@
             return {
                 info: undefined,
                 errorMessage: '',
-                errorDialog: false
+                errorDialog: false,
+                poolingTimer: 0,
             }
         },
         computed: {
@@ -194,8 +196,15 @@
                 location.reload();
             }
         },
+        beforeDestroy(): void {
+            clearInterval(this.poolingTimer);
+        },
         created(): void {
             this.loadParams();
+
+            this.poolingTimer = setInterval(() => {
+                this.loadParams();
+            }, 3000);
         }
     });
 </script>
