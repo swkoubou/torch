@@ -69,6 +69,23 @@
     <contact-dialog v-model="contactFlag"></contact-dialog>
 
     <admin v-if="isAdmin" v-model="adminLatAndLon"></admin>
+
+    <!-- エラー -->
+    <v-dialog v-model="errorDialog">
+      <v-card>
+        <v-card-title>エラー</v-card-title>
+        <v-card-text>
+          <p>エラーが発生しました。</p>
+          <p>{{ errorMessage }}</p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-flex xs3 offset-xs9 align-end>
+            <v-btn class="ml-auto" color="accent" right @click="errorDialog = false">閉じる</v-btn>
+          </v-flex>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -135,6 +152,8 @@
         },
         adminLocation: userLocation
         likeEffects: Array<any>
+        errorMessage: string
+        errorDialog: boolean
     }
 
     export default Vue.extend({
@@ -197,7 +216,9 @@
                     x: 0,
                     y: 0,
                 },
-                likeEffects: []
+                likeEffects: [],
+                errorMessage: '',
+                errorDialog: false
             };
         },
         computed: {
@@ -287,6 +308,16 @@
             }
 
             this.watchMyLocation();
+        },
+        watch:{
+            errorDialog(val) {
+                if (!val && this.errorMessage !== "") {
+                    this.errorMessage = "";
+                }
+            },
+            errorMessage(val) {
+                this.errorDialog = val !== "";
+            }
         },
         beforeDestroy(): void {
             navigator.geolocation.clearWatch(this.locationWatchId);
@@ -552,7 +583,13 @@
                     });
                 }
                 Api.areaLike(areaId).then(res => {
-                    // 失敗時の処理？
+                    if (res.message !== 'success') {
+                        this.errorMessage = '不明なエラーです'
+                    }else{
+                        this.loadParams();
+                    }
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー'
                 })
             },
         },

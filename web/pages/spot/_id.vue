@@ -53,6 +53,7 @@
       </v-row>
     </v-container>
 
+    <!-- エラー -->
     <v-dialog v-model="errorDialog">
       <v-card>
         <v-card-title>エラー</v-card-title>
