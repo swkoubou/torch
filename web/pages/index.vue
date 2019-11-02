@@ -74,6 +74,7 @@
     import Api from "~/module/api";
     import contactDialog from "../components/contactDialog.vue";
     import * as geolib from 'geolib';
+    import GeoUtils from "~/utils/geoUtils";
 
     interface pinInfo {
         x: number
@@ -282,6 +283,18 @@
                 }
             }, false);
 
+            if (this.isAdmin) {
+                mapAction.addEventListener("touchstart", (e: any) => {
+                    if (e.changedTouches.length == 1) {
+                        const touch = e.changedTouches[0];
+                        this.getMapPosHandler(touch.clientX, touch.clientY);
+                    }
+                });
+                mapAction.addEventListener("mousedown", (e: any) => {
+                    this.getMapPosHandler(e.clientX, e.clientY);
+                });
+            }
+
             this.watchMyLocation();
         },
         beforeDestroy(): void {
@@ -387,18 +400,12 @@
                 const iw = map.offsetWidth;
                 const ih = map.offsetHeight;
 
-                const start = {
-                    lat: 35.48832,
-                    lon: 139.34024,
-                };
-                const end = {
-                    lat: 35.48491,
-                    lon: 139.34596,
-                };
+                const startPos = GeoUtils.convertPos(GeoUtils.start.lat, GeoUtils.start.lon);
+                const endPos = GeoUtils.convertPos(GeoUtils.end.lat, GeoUtils.end.lon);
+                const currentXY = GeoUtils.convertPos(testPin.lat, testPin.lon);
 
-                const startPos = this.convertPos(start.lat, start.lon);
-                const endPos = this.convertPos(end.lat, end.lon);
-                const currentXY = this.convertPos(testPin.lat, testPin.lon);
+                const xxx = GeoUtils.convertPosFromPx(currentXY.x, currentXY.y);
+                console.log(currentXY.y,currentXY.x, ":",testPin, xxx);
 
                 const bx = iw / (endPos.x - startPos.x);
                 const by = ih / (endPos.y - startPos.y);
@@ -413,16 +420,7 @@
                     y: pxY,
                 }
             },
-            convertPos(lat: number, lon: number): any {
-                const z = 40;
-                const L = 85.05112878;
-                const pointX = Math.pow(2, (z + 7)) * ((lon / 180) + 1);
-                const pointY = Math.pow(2, (z + 7) / Math.PI) * (-1 * Math.atanh(Math.sin(lat * Math.PI / 180)) + Math.atanh(Math.sin(L * Math.PI / 180)));
-                return {
-                    x: pointX,
-                    y: pointY,
-                }
-            },
+
             loadPins() {
                 //TODO: あとで消す
                 this.testPins.push({
@@ -520,6 +518,39 @@
                     this.$set(this.areas[k], 'height', h);
                     this.$set(this.areas[k], 'opacity', v.hotScore / 100.0);
                 });
+            },
+            getMapPosHandler(x: number, y: number) {
+                const map: any = this.$refs.map;
+
+                const startPos = GeoUtils.convertPos(GeoUtils.start.lat, GeoUtils.start.lon);
+                const endPos = GeoUtils.convertPos(GeoUtils.end.lat, GeoUtils.end.lon);
+
+                let cx = x - this.touchStartPos.backPosX;
+                let cy = y - this.touchStartPos.backPosY;
+
+                let iw = map.offsetWidth;
+                let ih = map.offsetHeight;
+
+                const bx = iw / (endPos.x - startPos.x);
+                const by = ih / (endPos.y - startPos.y);
+
+                cx /= bx;
+                cy /= by;
+                // console.log(by, cx, cy);
+                cx += startPos.x;
+                cy += startPos.y;
+
+                const pos = GeoUtils.convertPosFromPx(cx, cy);
+                console.log(pos);
+
+                this.testPins.push({
+                    lat: pos.lat,
+                    lon: pos.lon,
+                    class: 'active',
+                });
+                this.updatePins();
+                console.log(this.pins);
+                console.log(pos);
             }
         },
     })
