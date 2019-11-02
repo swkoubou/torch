@@ -43,7 +43,8 @@
         }"></div>
 
         <div class="like-effect" v-for="i in likeEffects" :key="i.createdTime"
-             :style="{ 'top': i.y + 'px', 'left': i.x + 'px' }">
+             :style="{ 'top': i.y + 'px', 'left': i.x + 'px' }"
+             :class="'like-effect'+i.effectType">
           <v-icon color="primary">mdi-heart</v-icon>
         </div>
       </div>
@@ -525,15 +526,20 @@
                     return;
                 }
 
+                const xRand = 30 - Math.round(Math.random() * 30);
+                const yRand = 30 - Math.round(Math.random() * 30);
+                const effectRand = Math.ceil(Math.random() * 2);
+
                 const now = new Date().getTime();
                 let e = {
                     createdTime: now,
-                    x: this.userLocation.x,
-                    y: this.userLocation.y,
+                    effectType: effectRand,
+                    x: this.userLocation.x + xRand,
+                    y: this.userLocation.y + yRand,
                 };
                 this.likeEffects.push(e);
 
-                if(this.likeEffects.length > 300) {
+                if (this.likeEffects.length > 300) {
                     let deleteKeys = Array<number>();
                     this.likeEffects.forEach((v, index) => {
                         const isDelete = now - v.createdTime > 800;
@@ -622,7 +628,14 @@
         background-color: rgba(red, .15);
         justify-content: center;
         align-items: center;
-        animation: 0.5s ease like-effect forwards;
+
+        &.like-effect1 {
+          animation: 0.5s ease like-effect forwards;
+        }
+
+        &.like-effect2 {
+          animation: 0.5s ease like-effect2 forwards;
+        }
 
         i {
           font-size: 120px;
@@ -736,6 +749,26 @@
   @keyframes like-effect {
     0% {
       transform: scale(0.2) rotate(80deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    65% {
+      opacity: 1;
+    }
+    80% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes like-effect2 {
+    0% {
+      transform: scale(0.2) rotate(-80deg);
       opacity: 0;
     }
     10% {
