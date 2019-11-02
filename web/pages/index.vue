@@ -98,6 +98,7 @@
         testPins: Array<any>
         userLocation: userLocation
         locationWatchId: any
+        userTruthLocation: any
         menuValue: boolean
         shareFlag: boolean
     }
@@ -142,6 +143,10 @@
                 userLocation: {
                     x: 0,
                     y: 0,
+                },
+                userTruthLocation: {
+                    lat: 0,
+                    lon: 0,
                 },
                 locationWatchId: 0,
                 menuValue: false,
@@ -236,6 +241,7 @@
 
                     this.realScale = truthScale;
                     this.updatePins();
+                    this.updateUserLocation(this.userTruthLocation);
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -386,12 +392,19 @@
                     lat: position.coords.latitude,
                     lon: position.coords.longitude
                 };
+                this.updateUserLocation(userLocation);
+            },
+            updateUserLocation(userLocation: any) {
                 const xy = this.getGeo2Px(userLocation);
 
                 this.userLocation = {
                     x: xy.x,
                     y: xy.y
                 };
+                this.userTruthLocation = {
+                    lat: userLocation.lat,
+                    lon: userLocation.lon
+                }
             },
             changeShare() {
                 this.shareFlag = !this.shareFlag;
