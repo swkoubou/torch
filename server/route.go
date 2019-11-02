@@ -12,7 +12,7 @@ import (
 func Route(e *echo.Echo, db *gorm.DB) error {
 	// ViewやModelの準備
 	likeSpotModel := model.NewLikeSpotModel(db)
-// 	likeAreaModel := model.NewLikeAreaModel(db, likeSpotModel)
+ 	likeAreaModel := model.NewLikeAreaModel(db, likeSpotModel)
 
 	spotPhotoModel := model.NewSpotPhotoModel()
 	spotModel := model.NewSpotModel(db, spotPhotoModel, likeSpotModel)

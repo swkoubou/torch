@@ -42,11 +42,13 @@
       <div class="area-range-test" :style="mapStyle">
         <div class="area-rect" v-for="a in areas" :style="{
         transform: 'translate('+a.leftUp.x + 'px, '+a.leftUp.y + 'px)',
-        width: a.widht + 'px',
+        width: a.width + 'px',
         height: a.height + 'px',
+        opacity: a.opacity ,
         }">{{ a.name }}
         </div>
       </div>
+      <div class="map-action" ref="map-action"></div>
     </div>
 
     <!-- いいねボタン -->
@@ -69,9 +71,9 @@
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
-    import {messages, structs} from "~/proto/web";
     import Api from "~/module/api";
     import contactDialog from "../components/contactDialog.vue";
+    import * as geolib from 'geolib';
 
     interface pinInfo {
         x: number
@@ -175,7 +177,60 @@
         },
         computed: {
             areaName(): string {
-                return 'さばんなちほー';
+                const defaultName = '未開の地';
+                const centerArray: Array<any> = [];
+                let centerWithName = new Map<string, string>();
+                const userLat = this.userTruthLocation.lat;
+                const userLon = this.userTruthLocation.lon;
+
+                this.areas.forEach((v) => {
+                    const leftTop = v.region.leftUp;
+                    const rightBottom = v.region.rightBottom;
+
+                    const center = geolib.getCenter([{
+                        latitude: leftTop.latitude,
+                        longitude: leftTop.longitude
+                    }, {
+                        latitude: rightBottom.latitude,
+                        longitude: rightBottom.longitude
+                    }]);
+                    if (!center) {
+                        return;
+                    }
+
+                    const key: string = center.latitude + '_' + center.longitude;
+                    centerWithName.set(key, v.name);
+                    centerArray.push(center);
+                });
+
+                const mostNear: any = geolib.findNearest({
+                    latitude: userLat,
+                    longitude: userLon
+                }, centerArray);
+                if (typeof mostNear === "undefined") {
+                    return defaultName;
+                }
+
+                const distance = geolib.getPreciseDistance({
+                    latitude: mostNear.latitude,
+                    longitude: mostNear.longitude,
+                }, {
+                    latitude: userLat,
+                    longitude: userLon
+                });
+                const distanceM = geolib.convertDistance(distance, 'm');
+                // 500M以上離れていればエリアにいないと判定
+                if (distanceM > 500) {
+                    return defaultName;
+                }
+
+                const key = mostNear.latitude + '_' + mostNear.longitude;
+                const name = centerWithName.get(key);
+                if (typeof name === "string") {
+                    return name;
+                } else {
+                    return defaultName;
+                }
             }
         },
         created(): void {
@@ -188,9 +243,9 @@
             this.loadAreas();
         },
         mounted() {
-            const mapParent: any = this.$refs['map-parent'];
+            const mapAction: any = this.$refs['map-action'];
 
-            mapParent.addEventListener("touchstart", (e: any) => {
+            mapAction.addEventListener("touchstart", (e: any) => {
                 if (e.changedTouches.length == 1) {
                     this.menuValue = false;
                     const touch = e.changedTouches[0];
@@ -206,9 +261,9 @@
                 this.scaleFlag = this.touches > 1;
 
                 e.preventDefault();
-            });
+            }, false);
 
-            mapParent.addEventListener("touchmove", (e: any) => {
+            mapAction.addEventListener("touchmove", (e: any) => {
                 const touches = e.changedTouches;
                 if (touches.length == 1 && !this.scaleFlag) {
                     this.mapMoveEventHandler(touches);
@@ -216,16 +271,16 @@
                     this.mapScaleEventHandler(touches);
                 }
                 e.preventDefault();
-            });
+            }, false);
 
-            mapParent.addEventListener('touchend', (e: any) => {
+            mapAction.addEventListener('touchend', (e: any) => {
                 this.touches -= e.changedTouches.length;
                 if (this.touches == 0) {
                     this.scaleMeta.beseDistance = 0;
                     this.scaleMeta.baseImageWidth = 0;
                     this.scaleMeta.baseImageWidth = 0;
                 }
-            });
+            }, false);
 
             this.watchMyLocation();
         },
@@ -265,6 +320,7 @@
                     this.realScale = truthScale;
                     this.updatePins();
                     this.updateUserLocation(this.userTruthLocation);
+                    this.updateAreas();
                 }
             },
             mapMoveEventHandler(touches: Touch[]): void {
@@ -434,24 +490,35 @@
             },
             loadAreas() {
                 Api.getAreas().then(res => {
-                    const areas = res.areaInfos;
-                    areas.forEach((v: any) => {
-                        const leftUp = v.region.leftUp;
-                        const leftUpPx = this.getGeo2Px({
-                            lat: leftUp.latitude,
-                            lon: leftUp.longitude
-                        });
-                        const rightBottom = v.region.rightBottom;
-                        const rightBottomPx = this.getGeo2Px({
-                            lat: rightBottom.latitude,
-                            lon: rightBottom.longitude
-                        });
-                        v.leftUp = leftUpPx;
-                        v.width = rightBottomPx.x - leftUpPx.x;
-                        v.height = rightBottomPx.y - leftUpPx.y;
+                    this.areas = res.areaInfos;
+                    this.updateAreas();
+                });
+            },
+            updateAreas() {
+                this.areas.forEach((v: any, k: number) => {
+                    const leftUp = v.region.leftUp;
+                    const leftUpPx = this.getGeo2Px({
+                        lat: leftUp.latitude,
+                        lon: leftUp.longitude
+                    });
+                    const rightBottom = v.region.rightBottom;
+                    const rightBottomPx = this.getGeo2Px({
+                        lat: rightBottom.latitude,
+                        lon: rightBottom.longitude
                     });
 
-                    this.areas = areas;
+                    let w = rightBottomPx.x - leftUpPx.x;
+                    let h = rightBottomPx.y - leftUpPx.y;
+                    if (w > h) {
+                        h = w;
+                    } else {
+                        w = h;
+                    }
+
+                    this.$set(this.areas[k], 'leftUp', leftUpPx);
+                    this.$set(this.areas[k], 'width', w);
+                    this.$set(this.areas[k], 'height', h);
+                    this.$set(this.areas[k], 'opacity', 0);
                 });
             }
         },
@@ -558,8 +625,19 @@
 
       .area-rect {
         position: absolute;
-        border: solid 1px rgba(blue, .5);
+        overflow: hidden;
+        font-size: 8px;
+        border-radius: 50%;
+        border: solid 1px rgba(red, .3);
+        background-color: rgba(red, .1);
       }
+    }
+
+    .map-action {
+      position: relative;
+      top: -400%;
+      width: 100%;
+      height: 100%;
     }
   }
 
