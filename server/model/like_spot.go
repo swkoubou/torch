@@ -32,7 +32,14 @@ func (model *LikeSpotModelImpl) Like(spotID uint) (err error) {
 }
 
 func (model *LikeSpotModelImpl) CountLikes(spotID uint) (count uint, err error) {
-	panic("implement me")
+	result := model.db.Where("id = ?", spotID).Count(&count)
+	err = result.Error
+	if err != nil {
+		errMsg := "LikeSpotModel.CountLikes(): " + err.Error()
+		return 0, errors.New(errMsg)
+	}
+
+	return count, nil
 }
 
 func (model *LikeSpotModelImpl) CountAllLikes(targetSpots []types.SpotInfo) (counted []types.SpotInfo, err error) {
