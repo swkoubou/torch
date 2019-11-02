@@ -11,10 +11,19 @@ import (
 
 func Route(e *echo.Echo, db *gorm.DB) error {
 	// ViewやModelの準備
+	likeSpotModel := model.NewLikeSpotModel(db)
+	likeAreaModel := model.NewLikeAreaModel(db, likeSpotModel)
+
 	spotPhotoModel := model.NewSpotPhotoModel()
-	spotModel := model.NewSpotModel(db, spotPhotoModel)
+	spotModel := model.NewSpotModel(db, spotPhotoModel, likeAreaModel)
+
+	hotLevelModel := model.NewHotLevelModel()
+
+	allSpotsModel := model.NewAllSpotsModel(db, hotLevelModel)
+	allAreasModel := model.NewAllAreasModel(db, hotLevelModel, allSpotsModel)
 
 	spotInfoPbView := pb.NewSpotInfoPbView(spotModel)
+	allAreaInfoPbView := pb.NewAllAreasPbView(allAreasModel)
 
 	// ルーティング
 	// これはテスト用にHello, Worldしてる
@@ -24,7 +33,8 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 
 	// Protocol Buffersルーターによるルーティング
 	pbRouter := pbrouter.NewProtocolBufferRouterByRouter(e)
-	pbRouter.POST("/spot/info", spotInfoPbView.GetPublishInterface(), spotInfoPbView.GetPOSTHandler)
+	pbRouter.POST("/spoInfo/get", spotInfoPbView.GetPublishInterface(), spotInfoPbView.GetPOSTHandler)
+	pbRouter.GET("/areaInfo/get/all", allAreaInfoPbView.GetGETHandler)
 
 	return nil
 }
