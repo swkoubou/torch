@@ -61,7 +61,7 @@
     <help-dialog v-model="helpFlag"></help-dialog>
     <contact-dialog v-model="contactFlag"></contact-dialog>
 
-    <admin v-if="isAdmin"></admin>
+    <admin v-if="isAdmin" v-model="adminLatAndLon"></admin>
   </div>
 </template>
 
@@ -121,6 +121,10 @@
         helpFlag: boolean
         areas: Array<any>
         contactFlag: boolean
+        adminLatAndLon: {
+            lat: number
+            lonL: number
+        }
     }
 
     export default Vue.extend({
@@ -174,6 +178,10 @@
                 helpFlag: false,
                 contactFlag: false,
                 areas: [],
+                adminLatAndLon: {
+                    lat: 0,
+                    lonL: 0
+                }
             };
         },
         computed: {
@@ -538,14 +546,8 @@
 
                 const pos = GeoUtils.convertPosFromPx(cx, cy);
 
-                this.testPins.push({
-                    lat: pos.lat,
-                    lon: pos.lon,
-                    class: 'active',
-                });
-                this.updatePins();
-                console.log(this.pins);
-                console.log(pos);
+                this.$set(this.adminLatAndLon, 'lat', pos.lat);
+                this.$set(this.adminLatAndLon, 'lon', pos.lon);
             }
         },
     })

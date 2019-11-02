@@ -20,8 +20,8 @@
         </v-toolbar>
 
         <v-form class="px-3">
-          <v-text-field label="緯度" type="number" v-model="title"></v-text-field>
-          <v-text-field label="経度" type="number" v-model="title"></v-text-field>
+          <v-text-field label="緯度" type="number" v-model="latAndLon.lon"></v-text-field>
+          <v-text-field label="経度" type="number" v-model="latAndLon.lat"></v-text-field>
           <v-file-input label="写真" ref="photo"></v-file-input>
           <v-text-field label="タイトル" v-model="title"></v-text-field>
           <p>期間</p>
@@ -67,6 +67,10 @@
     }
 
     interface AdminInterface {
+        latAndLon: {
+            lat: number
+            lon: number
+        }
         dialogShow: boolean
         timeDialogShow: boolean
         title: string
@@ -79,8 +83,18 @@
 
     export default Vue.extend({
         name: 'admin',
+        props: ['value'],
+        watch: {
+            value(value) {
+                this.latAndLon = Object.assign({}, value);
+            }
+        },
         data(): AdminInterface {
             return {
+                latAndLon: {
+                    lat: 0,
+                    lon: 0,
+                },
                 dialogShow: false,
                 timeDialogShow: false,
                 title: '',
