@@ -12,6 +12,10 @@ type LikeSpotModelImpl struct {
 	db *gorm.DB
 }
 
+func NewLikeSpotModel(db *gorm.DB) LikeSpotModel {
+	return &LikeSpotModelImpl{db: db}
+}
+
 func (model *LikeSpotModelImpl) Like(spotID uint) (err error) {
 	adding := &types.LikeSpot{
 		SpotInfoID: spotID,
