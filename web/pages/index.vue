@@ -153,6 +153,7 @@
         likeEffects: Array<any>
         errorMessage: string
         errorDialog: boolean
+        poolingTimer: any
     }
 
     export default Vue.extend({
@@ -217,7 +218,8 @@
                 },
                 likeEffects: [],
                 errorMessage: '',
-                errorDialog: false
+                errorDialog: false,
+                poolingTimer: 0,
             };
         },
         computed: {
@@ -253,6 +255,11 @@
 
             this.helpFlag = localStorage.getItem('help-dialog') != 'true';
             this.loadAreas();
+
+            this.poolingTimer = setInterval(() => {
+                this.loadAreas();
+                this.loadPins();
+            }, 5000);
         },
         mounted() {
             const mapAction: any = this.$refs['map-action'];
@@ -320,6 +327,7 @@
         },
         beforeDestroy(): void {
             navigator.geolocation.clearWatch(this.locationWatchId);
+            clearInterval(this.poolingTimer);
         },
         methods: {
             makeTransformStr(x: number, y: number): string {
@@ -593,7 +601,7 @@
                     this.errorMessage = 'ネットワークエラー'
                 })
             },
-            reload(){
+            reload() {
                 location.reload();
             }
         },
