@@ -25,6 +25,8 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 	spotInfoPbView := pb.NewSpotInfoPbView(spotModel)
 	allAreaInfoPbView := pb.NewAllAreasPbView(allAreasModel)
 	allSpotInfoPbView := pb.NewAllSpotsPbView(allSpotsModel)
+	likeSpotPbView := pb.NewLikeSpotPbView(likeSpotModel)
+	likeAreaPbView := pb.NewLikeAreaPbView(likeAreaModel)
 
 	// ルーティング
 	// これはテスト用にHello, Worldしてる
@@ -35,8 +37,12 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 	// Protocol Buffersルーターによるルーティング
 	pbRouter := pbrouter.NewProtocolBufferRouterByRouter(e)
 	pbRouter.POST("/spotInfo/get", spotInfoPbView.GetPublishInterface(), spotInfoPbView.GetPOSTHandler)
+
 	pbRouter.GET("/areaInfo/get/all", allAreaInfoPbView.GetGETHandler)
 	pbRouter.GET("/spotInfo/get/all", allSpotInfoPbView.GetGETHandler)
+
+	pbRouter.POST("/areaInfo/like", likeAreaPbView.GetPublishInterface(), likeAreaPbView.GetPOSTHandler)
+	pbRouter.POST("/spotInfo/like", likeSpotPbView.GetPublishInterface(), likeSpotPbView.GetPOSTHandler)
 
 	return nil
 }
