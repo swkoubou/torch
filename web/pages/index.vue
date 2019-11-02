@@ -79,10 +79,9 @@
           <p>{{ errorMessage }}</p>
         </v-card-text>
 
-        <v-card-actions>
-          <v-flex xs3 offset-xs9 align-end>
-            <v-btn class="ml-auto" color="accent" right @click="errorDialog = false">閉じる</v-btn>
-          </v-flex>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn class="mr-3 px-3" left @click="reload">再読込</v-btn>
+          <v-btn class="ml-3 px-3" right @click="errorDialog = false">閉じる</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -309,7 +308,7 @@
 
             this.watchMyLocation();
         },
-        watch:{
+        watch: {
             errorDialog(val) {
                 if (!val && this.errorMessage !== "") {
                     this.errorMessage = "";
@@ -447,6 +446,8 @@
                 Api.getPins().then((res) => {
                     this.pinInfoArr = res.spotInfos;
                     this.updatePins();
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
                 });
 
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -488,6 +489,8 @@
                 Api.getAreas().then(res => {
                     this.areas = res.areaInfos;
                     this.updateAreas();
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
                 });
             },
             updateAreas() {
@@ -590,6 +593,9 @@
                     this.errorMessage = 'ネットワークエラー'
                 })
             },
+            reload(){
+                location.reload();
+            }
         },
     })
 </script>

@@ -62,10 +62,9 @@
           <p>{{ errorMessage }}</p>
         </v-card-text>
 
-        <v-card-actions>
-          <v-flex xs3 offset-xs9 align-end>
-            <v-btn class="ml-auto" color="accent" right @click="errorDialog = false">閉じる</v-btn>
-          </v-flex>
+        <v-card-actions class="d-flex justify-end">
+          <v-btn class="mr-3 px-3" left @click="reload">再読込</v-btn>
+          <v-btn class="ml-3 px-3" right @click="errorDialog = false">閉じる</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -155,10 +154,13 @@
                 Api.getPinInfo(this.id).then(res => {
                     const info = res.spotInfo;
                     if (info === undefined || info == null) {
+                        this.errorMessage = '正常にデータを転送できませんでした';
                         return;
                     }
                     this.info = info;
-                })
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
+                });
             },
             shareTwitter(): void {
                 let text = this.pinName + '- TORCH 神奈川工科大学学園祭・幾徳祭';
@@ -181,12 +183,15 @@
                 Api.pinLike(this.id).then(res => {
                     if (res.message !== 'success') {
                         this.errorMessage = '不明なエラーです'
-                    }else{
+                    } else {
                         this.loadParams();
                     }
                 }).catch(() => {
                     this.errorMessage = 'ネットワークエラー'
                 })
+            },
+            reload(){
+                location.reload();
             }
         },
         created(): void {
