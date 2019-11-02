@@ -1,6 +1,32 @@
 <template>
-  <div>
-    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+  <div >
+    <v-btn fixed top left outlined rounded disabled color="accent" width="10rem" style="z-index: 3">{{areaName}}</v-btn>
+
+    <v-menu offset-y fixed top right v-model="menuValue">
+      <template v-slot:activator="{ on }">
+        <v-btn fixed top right fab outlined large color="primary" v-on="on">
+          <v-icon color="primary">mdi-menu</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item>
+          <v-list-item-title>ヘルプ</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="changeShare">
+          <v-list-item-title>シェア</v-list-item-title>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item>
+          <v-list-item-title>問い合わせ</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>規約</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>プライバシー</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
@@ -17,6 +43,7 @@
     </v-btn>
 
     <pin-detail></pin-detail>
+    <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -26,6 +53,7 @@
     import Vue from 'vue';
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
+    import shareDialog from "../components/shareDialog.vue";
 
     interface pinInfo {
         x: number
@@ -59,11 +87,13 @@
         scaleFlag: boolean
         touches: number
         testPins: Array<any>
+        menuValue: boolean
+        shareFlag: boolean
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail},
+        components: {admin, pinDetail, shareDialog},
         data(): indexData {
             return {
                 isAdmin: false,
@@ -98,6 +128,8 @@
                 scaleFlag: false,
                 touches: 0,
                 testPins: [],
+                menuValue: false,
+                shareFlag: false,
             };
         },
         computed: {
@@ -116,6 +148,7 @@
 
             mapParent.addEventListener("touchstart", (e: any) => {
                 if (e.changedTouches.length == 1) {
+                    this.menuValue = false;
                     const touch = e.changedTouches[0];
                     this.touchStartPos = {
                         x: touch.pageX,
@@ -297,7 +330,10 @@
                     maximumAge: 5,
                 });
             },
-        }
+            changeShare() {
+                this.shareFlag = !this.shareFlag;
+            },
+        },
     })
 </script>
 
