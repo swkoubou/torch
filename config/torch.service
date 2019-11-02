@@ -1,0 +1,13 @@
+[Unit]
+Description=2019 ikutokusai site
+After=mariadb.target
+
+[Service]
+Type=simple
+ExecStart=/opt/server
+EnvironmentFile=/opt/server.env
+WorkingDirectory=/opt
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
