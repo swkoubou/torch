@@ -29,11 +29,11 @@
             <v-text-field label="タイトル" v-model="title"></v-text-field>
             <p>期間</p>
             <v-checkbox label="すべての期間" v-model="allTime"></v-checkbox>
-            <v-radio-group :disabled="allTime">
+            <v-radio-group :disabled="allTime" v-model="targetDate">
               <v-radio label="土曜日" value="1"></v-radio>
               <v-radio label="日曜日" value="2"></v-radio>
               <v-checkbox label="終日" v-model="allDate"></v-checkbox>
-              <v-btn :disabled="allTime || allDate" color="accent" @click="timeDialogShow=true">開始時間を設定</v-btn>
+              <v-btn :disabled="allTime || allDate" color="accent" @click="timeDialogShow=true">期間を設定</v-btn>
               <p>{{ startAndEndTime.startTime }} 〜 {{ startAndEndTime.endTime }}</p>
             </v-radio-group>
 
@@ -64,6 +64,7 @@
 
 <script lang="ts">
     import Vue from 'vue';
+    import Api from "~/module/api";
 
     interface startAndEndTimeInterface {
         startTime: string
@@ -81,6 +82,7 @@
         description: string
         allTime: boolean
         allDate: boolean
+        targetDate: string,
         startAndEndTime: startAndEndTimeInterface
         startAndEndTimeTemp: startAndEndTimeInterface
     }
@@ -105,6 +107,7 @@
                 description: '',
                 allTime: true,
                 allDate: true,
+                targetDate: '1',
                 startAndEndTime: {
                     startTime: '',
                     endTime: '',
@@ -121,17 +124,65 @@
                 this.timeDialogShow = false;
             },
             save(): void {
+                const satDate = '2019-11/02';
+                const sunDate = '2019-11/03';
+
+                let start = new Date();
+                let end = new Date();
+
+                if (this.allTime) {
+                    start = new Date(satDate + ' 00:00:00');
+                    end = new Date(sunDate + ' 23:59:59');
+                } else {
+                    let startTime = '00:00:00';
+                    let endTime = '23:59:59';
+
+                    if (!this.allDate) {
+                        startTime = this.startAndEndTime.startTime + ':00';
+                        endTime = this.startAndEndTime.endTime + ':00';
+                    }
+
+                    if (this.targetDate == '1') {
+                        start = new Date(satDate + ' ' + startTime);
+                        end = new Date(satDate + ' ' + endTime);
+                    } else if (this.targetDate == '2') {
+                        start = new Date(sunDate + ' ' + startTime);
+                        end = new Date(sunDate + ' ' + endTime);
+                    }
+                }
+
+                let postData = new FormData();
+
                 // @ts-ignore
                 const imageInput = this.$refs['photo'].$el.querySelector('input');
                 const file = imageInput.files[0];
-                let reader = new FileReader();
-                reader.onload = ((theFile) => {
-                    return (e: any) => {
-                        const imageData = e.target.result;
-                        console.log(imageData);
-                    };
-                })(file);
-                reader.readAsArrayBuffer(file);
+                postData.append("image", file);
+
+                let option = {
+                    name: this.title,
+                    description: this.description,
+                    loc_latitude: this.latAndLon.lat,
+                    lon_latitude: this.latAndLon.lon,
+                    area_id: "!!!!!!!!!!!!!!!!!!",
+                    start_year: start.getFullYear(),
+                    start_month: start.getMonth(),
+                    start_day: start.getDate(),
+                    start_hour: start.getHours(),
+                    start_minute: start.getMinutes(),
+                    start_second: start.getSeconds(),
+                    end_year: end.getFullYear(),
+                    end_month: end.getMonth(),
+                    end_day: end.getDate(),
+                    end_hour: end.getHours(),
+                    end_minute: end.getMinutes(),
+                    end_second: end.getSeconds(),
+                };
+
+                postData.append("option", JSON.stringify(option));
+
+                Api.addSpot(postData).then(() => {
+
+                })
                 this.dialogShow = false
             }
         },
