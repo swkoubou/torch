@@ -100,6 +100,7 @@
     import PinUtils from "~/utils/pinUtils";
 
     interface pinInfo {
+        id: any
         x: number
         y: number
         class: string

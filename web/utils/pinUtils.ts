@@ -28,12 +28,14 @@ export default class PinUtils {
     if (now > start && now < end) {
       domClass = 'active';
 
-      if (pin.hotScore > 40 && pin.hotScore < 60) {
-        domClass = 'hot1'
-      } else if (pin.hotScore < 90) {
-        domClass = 'hot2'
-      } else {
-        domClass = 'hot3'
+      if (typeof pin.hotScore !== "undefined" && pin.hotScore != null) {
+        if (pin.hotScore > 40 && pin.hotScore < 60) {
+          domClass = 'hot1'
+        } else if (pin.hotScore < 90) {
+          domClass = 'hot2'
+        } else {
+          domClass = 'hot3'
+        }
       }
     }
 

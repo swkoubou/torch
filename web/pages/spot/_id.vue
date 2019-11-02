@@ -95,7 +95,7 @@
         },
         computed: {
             id(): number {
-                return this.$route.params['id'];
+                return Number(this.$route.params['id']);
             },
             pinFavCount(): number {
                 if (this.info === undefined) {
