@@ -1,6 +1,6 @@
 <template>
   <div >
-    <v-btn fixed top left fab outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+    <v-btn fixed top left outlined rounded disabled color="accent" width="10rem" style="z-index: 3">{{areaName}}</v-btn>
 
     <v-menu offset-y fixed top right v-model="menuValue">
       <template v-slot:activator="{ on }">
