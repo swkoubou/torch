@@ -63,6 +63,7 @@ func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsRespons
 
 func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 	return &structs.SpotInfo{
+		SpotId:        uint32(spotInfo.ID),
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,

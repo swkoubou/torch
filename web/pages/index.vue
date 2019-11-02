@@ -30,27 +30,26 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
-      <div class="pin-parent" :style="mapStyle">
-        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
-          <v-icon :class="p.class">mdi-map-marker</v-icon>
-        </div>
-        <div class="pin admin-pin" v-if="isAdmin"
-             :style="{ 'top': adminLocation.y + 'px', 'left': adminLocation.x + 'px' }"></div>
-      </div>
       <div class="user-location-parent" :style="mapStyle">
         <div class="user-location"
              :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
       </div>
-      <div class="area-range-test" :style="mapStyle">
+      <div class="area-range" :style="mapStyle">
         <div class="area-rect" v-for="a in areas" :style="{
         transform: 'translate('+a.leftUp.x + 'px, '+a.leftUp.y + 'px)',
         width: a.width + 'px',
         height: a.height + 'px',
         opacity: a.opacity ,
-        }">{{ a.name }}
-        </div>
+        }"></div>
       </div>
-      <div class="map-action" ref="map-action"></div>
+      <div class="pin-parent" ref="map-action" :style="mapStyle">
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"
+             v-on:touchstart="showDetail(p)">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
+        <div class="pin admin-pin" v-if="isAdmin"
+             :style="{ 'top': adminLocation.y + 'px', 'left': adminLocation.x + 'px' }"></div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -58,7 +57,6 @@
       <v-icon color="primary">mdi-heart</v-icon>
     </v-btn>
 
-    <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
     <help-dialog v-model="helpFlag"></help-dialog>
     <contact-dialog v-model="contactFlag"></contact-dialog>
@@ -70,13 +68,13 @@
 <script lang="ts">
     import Vue from 'vue';
     import admin from '../components/admin.vue';
-    import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
     import Api from "~/module/api";
     import contactDialog from "../components/contactDialog.vue";
     import GeoUtils from "~/utils/geoUtils";
     import {structs} from "~/proto/web";
+    import PinUtils from "~/utils/pinUtils";
 
     interface pinInfo {
         x: number
@@ -91,6 +89,7 @@
 
     interface indexData {
         isAdmin: boolean
+        pinInfoArr: Array<structs.ISpotInfo>
         pins: Array<pinInfo>
         touchStartPos: {
             x: number
@@ -114,7 +113,6 @@
         realScale: number
         scaleFlag: boolean
         touches: number
-        testPins: Array<any>
         userLocation: userLocation
         locationWatchId: any
         userTruthLocation: any
@@ -133,10 +131,11 @@
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog, helpDialog, contactDialog},
+        components: {admin, shareDialog, helpDialog, contactDialog},
         data(): indexData {
             return {
                 isAdmin: false,
+                pinInfoArr: [],
                 pins: [],
                 touchStartPos: {
                     x: 0,
@@ -167,7 +166,6 @@
                 realScale: 0,
                 scaleFlag: false,
                 touches: 0,
-                testPins: [],
                 userLocation: {
                     x: 0,
                     y: 0,
@@ -356,14 +354,17 @@
             },
             updatePins() {
                 this.pins = [];
-                this.testPins.forEach((testPin) => {
-                    const xy = this.getGeo2Px(testPin);
+                this.pinInfoArr.forEach((pin: structs.ISpotInfo) => {
+                    const domOps = PinUtils.convertUiPin(pin);
+
+                    const xy = this.getGeo2Px(domOps['geoPos']);
                     const pxX = xy.x;
                     const pxY = xy.y;
                     this.pins.push({
+                        id: domOps['id'],
                         x: pxX,
                         y: pxY,
-                        class: testPin.class,
+                        class: domOps['class'],
                     });
                 })
             },
@@ -392,35 +393,11 @@
             },
 
             loadPins() {
-                //TODO: あとで消す
-                this.testPins.push({
-                    lat: 35.48560,
-                    lon: 139.34135,
-                    class: 'active',
-                });
-                this.testPins.push({
-                    lat: 35.48655,
-                    lon: 139.34287,
-                    class: 'disabled',
-                });
-                this.testPins.push({
-                    lat: 35.48763,
-                    lon: 139.34382,
-                    class: 'hot1',
-                });
-                this.testPins.push({
-                    lat: 35.48559,
-                    lon: 139.34436,
-                    class: 'hot2',
-                });
-                this.testPins.push({
-                    lat: 35.48625,
-                    lon: 139.34375,
-                    class: 'hot3',
+                Api.getPins().then((res) => {
+                    this.pinInfoArr = res.spotInfos;
+                    this.updatePins();
                 });
 
-                // TODO: あとでAPIに変える
-                this.updatePins();
                 navigator.geolocation.getCurrentPosition((position) => {
                     this.setUserLocation(position);
                 }, () => {
@@ -518,6 +495,10 @@
                     x: x - this.touchStartPos.backPosX,
                     y: y - this.touchStartPos.backPosY,
                 };
+            },
+            showDetail(pin: any) {
+                const id = pin['id'];
+                this.$router.push('/spot/' + id);
             }
         },
     })
@@ -535,9 +516,55 @@
       display: block;
     }
 
-    .pin-parent {
+    .user-location-parent {
       position: relative;
       top: -100%;
+
+      .user-location {
+        $size: 15px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        background-color: rgb(40, 53, 147);
+        border-radius: 50%;
+        transition: ease .1s transform;
+
+        &::before {
+          display: block;
+          content: '';
+          width: $size * 4;
+          height: $size* 4;
+          border-radius: 50%;
+          background-color: rgba(57, 73, 171, .3);
+          margin: -($size*3/2);
+          border: solid thin rgba(57, 73, 171, .6);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: 1.8s linear opacity-blink-animate infinite;
+        }
+      }
+    }
+
+    .area-range {
+      position: relative;
+      top: -200%;
+
+      .area-rect {
+        position: absolute;
+        overflow: hidden;
+        font-size: 8px;
+        border-radius: 50%;
+        border: solid 1px rgba(red, .3);
+        background-color: rgba(red, .1);
+      }
+    }
+
+
+    .pin-parent {
+      position: relative;
+      top: -300%;
 
       .pin {
         $size: 30px;
@@ -591,58 +618,6 @@
         transform: translate(-50%, -50%);
         background-color: rgba(red, .8);
       }
-    }
-
-    .user-location-parent {
-      position: relative;
-      top: -200%;
-
-      .user-location {
-        $size: 15px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: $size;
-        height: $size;
-        background-color: rgb(40, 53, 147);
-        border-radius: 50%;
-        transition: ease .1s transform;
-
-        &::before {
-          display: block;
-          content: '';
-          width: $size * 4;
-          height: $size* 4;
-          border-radius: 50%;
-          background-color: rgba(57, 73, 171, .3);
-          margin: -($size*3/2);
-          border: solid thin rgba(57, 73, 171, .6);
-          border-left-color: transparent;
-          border-right-color: transparent;
-          animation: 1.8s linear opacity-blink-animate infinite;
-        }
-      }
-    }
-
-    .area-range-test {
-      position: relative;
-      top: -300%;
-
-      .area-rect {
-        position: absolute;
-        overflow: hidden;
-        font-size: 8px;
-        border-radius: 50%;
-        border: solid 1px rgba(red, .3);
-        background-color: rgba(red, .1);
-      }
-    }
-
-    .map-action {
-      position: relative;
-      top: -400%;
-      width: 100%;
-      height: 100%;
     }
   }
 
