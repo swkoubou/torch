@@ -1,12 +1,18 @@
 package types
 
-import "io"
+import (
+	"mime/multipart"
+	"time"
+)
 
 // スポットを追加するときの構造体
 type NewSpotInfo struct {
 	Name        string
 	Description string
-	PhotoReader io.Reader
+	PhotoReader *multipart.FileHeader
 	LocatedAt   Location
 	AreaID      uint
+
+	StartingAt time.Time
+	EndingAt   time.Time
 }

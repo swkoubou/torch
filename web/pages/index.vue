@@ -1,11 +1,39 @@
 <template>
   <div>
-    <v-btn fixed top left disabled outlined rounded large color="success" width="10rem">{{areaName}}</v-btn>
+    <v-btn fixed top left outlined rounded disabled color="accent" width="10rem" style="z-index: 3">{{areaName}}</v-btn>
+
+    <v-menu offset-y fixed top right v-model="menuValue">
+      <template v-slot:activator="{ on }">
+        <v-btn fixed top right fab outlined large color="primary" v-on="on">
+          <v-icon color="primary">mdi-menu</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item>
+          <v-list-item-title>ヘルプ</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="changeShare">
+          <v-list-item-title>シェア</v-list-item-title>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item>
+          <v-list-item-title>問い合わせ</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>規約</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>プライバシー</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
       <div class="pin-parent" :style="mapStyle">
-        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"></div>
+        <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
+          <v-icon :class="p.class">mdi-map-marker</v-icon>
+        </div>
       </div>
       <div class="user-location-parent" :style="mapStyle">
         <div class="user-location"
@@ -19,6 +47,7 @@
     </v-btn>
 
     <pin-detail></pin-detail>
+    <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -28,10 +57,12 @@
     import Vue from 'vue';
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
+    import shareDialog from "../components/shareDialog.vue";
 
     interface pinInfo {
         x: number
         y: number
+        class: string
     }
 
     interface userLocation {
@@ -67,11 +98,13 @@
         testPins: Array<any>
         userLocation: userLocation
         locationWatchId: any
+        menuValue: boolean
+        shareFlag: boolean
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail},
+        components: {admin, pinDetail, shareDialog},
         data(): indexData {
             return {
                 isAdmin: false,
@@ -111,6 +144,8 @@
                     y: 0,
                 },
                 locationWatchId: 0,
+                menuValue: false,
+                shareFlag: false,
             };
         },
         computed: {
@@ -129,6 +164,7 @@
 
             mapParent.addEventListener("touchstart", (e: any) => {
                 if (e.changedTouches.length == 1) {
+                    this.menuValue = false;
                     const touch = e.changedTouches[0];
                     this.touchStartPos = {
                         x: touch.pageX,
@@ -253,7 +289,11 @@
                     const xy = this.getGeo2Px(testPin);
                     const pxX = xy.x;
                     const pxY = xy.y;
-                    this.pins.push({x: pxX, y: pxY});
+                    this.pins.push({
+                        x: pxX,
+                        y: pxY,
+                        class: testPin.class,
+                    });
                 })
             },
             getGeo2Px(testPin: any): any {
@@ -301,12 +341,29 @@
             loadPins() {
                 //TODO: あとで消す
                 this.testPins.push({
-                    lat: 35.48755,
-                    lon: 139.34112,
+                    lat: 35.48560,
+                    lon: 139.34135,
+                    class: 'active',
                 });
                 this.testPins.push({
                     lat: 35.48655,
-                    lon: 139.34442,
+                    lon: 139.34287,
+                    class: 'disabled',
+                });
+                this.testPins.push({
+                    lat: 35.48763,
+                    lon: 139.34382,
+                    class: 'hot1',
+                });
+                this.testPins.push({
+                    lat: 35.48559,
+                    lon: 139.34436,
+                    class: 'hot2',
+                });
+                this.testPins.push({
+                    lat: 35.48625,
+                    lon: 139.34375,
+                    class: 'hot3',
                 });
 
                 // TODO: あとでAPIに変える
@@ -335,8 +392,11 @@
                     x: xy.x,
                     y: xy.y
                 };
-            }
-        }
+            },
+            changeShare() {
+                this.shareFlag = !this.shareFlag;
+            },
+        },
     })
 </script>
 
@@ -357,13 +417,49 @@
       top: -100%;
 
       .pin {
+        $size: 30px;
         position: absolute;
-        width: 8px;
-        height: 8px;
+        width: $size;
+        height: $size;
         top: 0;
         left: 0;
         border-radius: 50%;
-        background-color: red;
+
+        i {
+          display: flex;
+          width: $size;
+          height: $size;
+          font-size: $size;
+          justify-items: center;
+          align-items: center;
+          color: rgb(0, 121, 107);
+          border-radius: 50%;
+
+          &.active {
+            color: rgb(25, 117, 210);
+          }
+
+          &.disabled {
+            color: rgb(120, 144, 156);
+          }
+
+          /** 一番低いホット **/
+          &.hot1 {
+            color: rgb(229, 57, 53);
+          }
+
+          /** 真ん中ホット **/
+          &.hot2 {
+            color: rgb(230, 74, 25);
+          }
+
+          /** 一番高いホット **/
+          &.hot3 {
+            color: rgb(198, 40, 40);
+            border: solid 1px rgb(198, 40, 40);
+            animation: 1s linear blink-animate infinite;
+          }
+        }
       }
     }
 
@@ -415,6 +511,30 @@
     100% {
       opacity: 1;
       transform: rotate(180deg);
+    }
+  }
+
+  @keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @-webkit-keyframes blink-animate {
+    0% {
+      border-color: rgba(198, 40, 40, 1);
+    }
+    50% {
+      border-color: rgba(198, 40, 40, 0);
+    }
+    100% {
+      border-color: rgba(198, 40, 40, 1);
     }
   }
 </style>
