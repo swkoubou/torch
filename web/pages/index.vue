@@ -12,7 +12,7 @@
         <v-list-item>
           <v-list-item-title>ヘルプ</v-list-item-title>
         </v-list-item>
-        <v-list-item>
+        <v-list-item @click="changeShare">
           <v-list-item-title>シェア</v-list-item-title>
         </v-list-item>
         <v-divider></v-divider>
@@ -43,7 +43,7 @@
     </v-btn>
 
     <pin-detail></pin-detail>
-    <share-dialog></share-dialog>
+    <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -88,6 +88,7 @@
         touches: number
         testPins: Array<any>
         menuValue: boolean
+        shareFlag: boolean
     }
 
     export default Vue.extend({
@@ -128,6 +129,7 @@
                 touches: 0,
                 testPins: [],
                 menuValue: false,
+                shareFlag: false,
             };
         },
         computed: {
@@ -327,6 +329,9 @@
                     enableHighAccuracy: true,
                     maximumAge: 5,
                 });
+            },
+            changeShare() {
+                this.shareFlag = !this.shareFlag;
             },
         },
     })

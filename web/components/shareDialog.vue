@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog">
+    <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title>
           <span>シェア</span>
@@ -19,6 +19,15 @@
             </v-btn>
           </v-flex>
         </v-card-text>
+        <v-card-actions>
+          <v-btn
+            color="primary"
+            text
+            @click="parentDialog"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -33,16 +42,13 @@
 
   export default Vue.extend({
       name: 'shareDialog',
-      data(): shareDialogInterface {
-          return {
-              dialog: true
-          };
+      props: {
+          dialog: {
+              type: Boolean,
+              default: true
+          }
       },
-
       methods: {
-          dialogClose(): void {
-              this.dialog = false;
-          },
           shareTwitter(): void {
             let shareURL = 'https://twitter.com/intent/tweet?text=torch.swkoubou.com&hashtags=torch';
             open(shareURL, "_blank");
@@ -55,6 +61,9 @@
               let baseUrl = encodeURIComponent('torch.swkoubou.com');
               let shareURL = `https://social-plugins.line.me/lineit/share?url=${baseUrl}`;
               open(shareURL, "_blank");
+          },
+          parentDialog(): void {
+              this.$emit('change');
           }
       }
   })
