@@ -23,7 +23,8 @@ func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResp
 	From(areaInfos).
 		Select(func(a interface{}) interface{} {
 			area := a.(types.AreaInfo)
-			return ToPbAreaInfo(&area)
+			pbArea := ToPbAreaInfo(&area)
+			return &pbArea
 		}).
 		ToSlice(pbAreaInfos)
 
