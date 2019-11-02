@@ -38,4 +38,21 @@ export default class Api {
       return messages.AllSpotsResponse.decode(_buf);
     })
   }
+
+  static getPinInfo(id: number): Promise<messages.SpotInfoResponse> {
+    const req = new messages.SpotInfoRequest();
+    req.spotId = id;
+    const bin = messages.SpotInfoRequest.encode(req).finish();
+
+    const u = this.getUrl('/spotInfo/get');
+    return fetch(u, {
+      method: 'POST',
+      body: bin,
+    }).then(res => {
+      return res.arrayBuffer();
+    }).then((buf: ArrayBuffer) => {
+      const _buf = new Uint8Array(buf);
+      return messages.SpotInfoResponse.decode(_buf);
+    })
+  }
 }

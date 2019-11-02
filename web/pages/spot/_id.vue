@@ -17,7 +17,7 @@
           <v-img height="300" :src="pinImageUrl"></v-img>
         </v-card>
 
-        <v-card flat>
+        <v-card width="100%" flat>
           <v-flex class="d-flex mt-4 mb-2">
             <!-- 各種SNSシェア -->
             <v-btn fab class="mx-1" @click="shareTwitter">
@@ -31,7 +31,7 @@
             </v-btn>
 
             <!-- いいね -->
-            <div class="ml-auto">
+            <div class="ml-auto mr-1">
               <v-btn fab>
                 <v-icon color="primary">mdi-heart</v-icon>
               </v-btn>
@@ -57,38 +57,83 @@
 
 <script lang="ts">
     import Vue from 'vue';
+    import Api from "~/module/api";
+    import {structs} from "~/proto/web";
+
+    interface _idInterface {
+        info: structs.ISpotInfo | undefined
+    }
 
     export default Vue.extend({
-        name: "_id",
+        name: "index",
+        data(): _idInterface {
+            return {
+                info: undefined,
+            }
+        },
         computed: {
-            id() {
+            id(): number {
                 return this.$route.params['id'];
             },
             pinFavCount(): number {
-                return 1204;
+                if (this.info === undefined) {
+                    return 0;
+                }
+                const count = this.info.sumLikeCount;
+                if (typeof count === "number") {
+                    return count
+                }
+                return 0;
             },
             pinName(): string {
-                //TODO: ピンの名前を返す
-                return 'test';
+                if (this.info === undefined) {
+                    return 'Unknown';
+                }
+                const name = this.info.name;
+                if (typeof name === "string") {
+                    return name
+                }
+                return 'Unknown';
             },
             pinImageUrl(): string {
-                //TODO: ピンの画像を返す
-                return 'https://dummyimage.com/600x400/000/fff';
+                if (this.info === undefined) {
+                    return '';
+                }
+                const image = this.info.photoFileName;
+                if (typeof image === "string") {
+                    return '/static-api/images/spot/' + image
+                }
+                return '';
             },
             pinDetailText(): string {
-                //TODO: ピンのテキストを返す
-                return '　吾輩は猫である。名前はまだ無い。\n' +
-                    '　どこで生れたかとんと見当がつかぬ。何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。吾輩はここで始めて人間というものを見た。しかもあとで聞くとそれは書生という人間中で一番獰悪な種族であったそうだ。この書生というのは時々我々を捕えて煮て食うという話である。しかしその当時は何という考もなかったから別段恐しいとも思わなかった。ただ彼の掌に載せられてスーと持ち上げられた時何だかフワフワした感じがあったばかりである。掌の上で少し落ちついて書生の顔を見たのがいわゆる人間というものの見始であろう。この時妙なものだと思った感じが今でも残っている。第一毛をもって装飾されべきはずの顔がつるつるしてまるで薬缶だ。その後猫にもだいぶ逢ったがこんな片輪には一度も出会わした事がない。のみならず顔の真中があまりに突起している。そうしてその穴の中から時々ぷうぷうと煙を吹く。どうも咽せぽくて実に弱った。これが人間の飲む煙草というものである事はようやくこの頃知った。';
+                if (this.info === undefined) {
+                    return 'Unknown';
+                }
+                const detail = this.info.description;
+                if (typeof detail === "string") {
+                    return detail
+                }
+                return 'Unknown';
             }
         },
         methods: {
             close(): void {
                 this.$router.push('/');
             },
+            loadParams() {
+                Api.getPinInfo(this.id).then(res => {
+                    const info = res.spotInfo;
+                    if (info === undefined || info == null) {
+                        return;
+                    }
+                    this.info = info;
+                })
+            },
             shareTwitter(): void {
-                // TODO: なんかいい感じのテキストを....
-                let text = 'sample'
-                let shareURL = `https://twitter.com/intent/tweet?url=torch.swkoubou.com&hashtags=torch&text=${text}`;
+                let text = this.pinName + '- TORCH 神奈川工科大学学園祭・幾徳祭';
+                text = encodeURI(text);
+                const url = encodeURI(location.href);
+                let shareURL = `https://twitter.com/intent/tweet?url=${url}&hashtags=torch&text=${text}`;
                 open(shareURL, "_blank");
             },
             shareFaceBook(): void {
@@ -96,12 +141,14 @@
                 open(shareURL, "_blank");
             },
             shareLine(): void {
-                // TODO: なんかいい感じのテキストを....
-                let text = 'Torchはじめました\nよろしく\nにゃーん\n'
-                let message = encodeURIComponent(text + 'torch.swkoubou.com');
+                let text = this.pinName + '- TORCH 神奈川工科大学学園祭・幾徳祭';
+                let message = encodeURIComponent(text + '\r\n' + location.href);
                 let shareURL = `http://line.me/R/msg/text/?${message}`;
                 open(shareURL, "_blank");
             }
+        },
+        created(): void {
+            this.loadParams();
         }
     });
 </script>
