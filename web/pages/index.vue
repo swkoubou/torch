@@ -19,11 +19,11 @@
         <v-list-item>
           <v-list-item-title>問い合わせ</v-list-item-title>
         </v-list-item>
-        <v-list-item>
-          <v-list-item-title>規約</v-list-item-title>
+        <v-list-item @click="$router.push('term')">
+          <v-list-item-title>利用規約</v-list-item-title>
         </v-list-item>
-        <v-list-item>
-          <v-list-item-title>プライバシー</v-list-item-title>
+        <v-list-item @click="$router.push('privacy')">
+          <v-list-item-title>プライバシーポリシー</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
