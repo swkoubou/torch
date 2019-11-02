@@ -18,8 +18,7 @@ generate_pb_server:
 	@rm -rf server/view/pb/github.com
 
 clean_pb_server:
-	@rm -rf ./server/view/pb/messages/*.pb.go
-	@rm -rf ./server/view/pb/messages/structs/*.pb.go
+	@rm -rf ./server/view/pb/messages/*
 
 ## Web
 generate_pb_web:
