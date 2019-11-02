@@ -199,7 +199,7 @@
                     name: this.title,
                     description: this.description,
                     loc_latitude: this.latAndLon.lat,
-                    lon_latitude: this.latAndLon.lon,
+                    loc_longitude: this.latAndLon.lon,
                     area_id: areaId,
                     start_year: start.getFullYear(),
                     start_month: start.getMonth(),
