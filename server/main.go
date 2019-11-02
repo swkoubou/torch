@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/labstack/echo"
 	"github.com/swkoubou/torch/server/lib/config"
@@ -20,7 +19,7 @@ func main() {
 
 	// DBのインスタンスの準備
 	dbLoc := config.GetDBServerLocation()
-	db, err := gorm.Open("mysql", dbLoc)
+	db, err := ConnectToDB(dbLoc)
 	if err != nil {
 		e.Logger.Fatal("Can't connect to db.", err)
 		return
