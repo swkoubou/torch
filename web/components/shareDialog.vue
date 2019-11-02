@@ -6,6 +6,7 @@
           <span>シェア</span>
         </v-card-title>
         <v-card-text>
+          <p>このページをシェアしてみんなで盛り上げよう！</p>
           <v-flex class="d-flex px-2 mt-4 mb-2">
             <!-- 各種SNSシェア -->
             <v-btn fab x-large class="mx-1 ml-auto" @click="shareTwitter">
