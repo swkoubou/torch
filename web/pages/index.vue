@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <v-btn fixed top left outlined rounded disabled color="accent" width="10rem" style="z-index: 3">{{areaName}}</v-btn>
 
     <v-menu offset-y fixed top right v-model="menuValue">
@@ -35,6 +35,10 @@
           <v-icon :class="p.class">mdi-map-marker</v-icon>
         </div>
       </div>
+      <div class="user-location-parent" :style="mapStyle">
+        <div class="user-location"
+             :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -61,6 +65,11 @@
         class: string
     }
 
+    interface userLocation {
+        x: number
+        y: number
+    }
+
     interface indexData {
         isAdmin: boolean
         pins: Array<pinInfo>
@@ -81,12 +90,14 @@
                 height: number
             }
         }
-        mapParentStyle: object
-        mapStyle: object
+        mapParentStyle: any
+        mapStyle: any
         realScale: number
         scaleFlag: boolean
         touches: number
         testPins: Array<any>
+        userLocation: userLocation
+        locationWatchId: any
         menuValue: boolean
         shareFlag: boolean
     }
@@ -128,6 +139,11 @@
                 scaleFlag: false,
                 touches: 0,
                 testPins: [],
+                userLocation: {
+                    x: 0,
+                    y: 0,
+                },
+                locationWatchId: 0,
                 menuValue: false,
                 shareFlag: false,
             };
@@ -181,7 +197,12 @@
                     this.scaleMeta.baseImageWidth = 0;
                     this.scaleMeta.baseImageWidth = 0;
                 }
-            })
+            });
+
+            this.watchMyLocation();
+        },
+        beforeDestroy(): void {
+            navigator.geolocation.clearWatch(this.locationWatchId);
         },
         methods: {
             makeTransformStr(x: number, y: number): string {
@@ -263,7 +284,23 @@
 
             },
             updatePins() {
+                this.pins = [];
+                this.testPins.forEach((testPin) => {
+                    const xy = this.getGeo2Px(testPin);
+                    const pxX = xy.x;
+                    const pxY = xy.y;
+                    this.pins.push({
+                        x: pxX,
+                        y: pxY,
+                        class: testPin.class,
+                    });
+                })
+            },
+            getGeo2Px(testPin: any): any {
                 const map: any = this.$refs.map;
+
+                const iw = map.offsetWidth;
+                const ih = map.offsetHeight;
 
                 const start = {
                     lat: 35.48832,
@@ -274,19 +311,32 @@
                     lon: 139.34596,
                 };
 
-                const iw = map.offsetWidth;
-                const ih = map.offsetHeight;
+                const startPos = this.convertPos(start.lat, start.lon);
+                const endPos = this.convertPos(end.lat, end.lon);
+                const currentXY = this.convertPos(testPin.lat, testPin.lon);
 
-                this.pins = [];
-                this.testPins.forEach((testPin) => {
-                    const pxX = iw - (testPin.lat - start.lat) * iw / (end.lat - start.lat);
-                    const pxY = ih - (testPin.lon - start.lon) * ih / (end.lon - start.lon);
-                    this.pins.push({
-                        x: pxX,
-                        y: pxY,
-                        class: testPin.class,
-                    });
-                })
+                const bx = iw / (endPos.x - startPos.x);
+                const by = ih / (endPos.y - startPos.y);
+
+                currentXY.x -= startPos.x;
+                currentXY.y -= startPos.y;
+
+                const pxX = currentXY.x * bx;
+                const pxY = currentXY.y * by;
+                return {
+                    x: pxX,
+                    y: pxY,
+                }
+            },
+            convertPos(lat: number, lon: number): any {
+                const z = 40;
+                const L = 85.05112878;
+                const pointX = Math.pow(2, (z + 7)) * ((lon / 180) + 1);
+                const pointY = Math.pow(2, (z + 7) / Math.PI) * (-1 * Math.atanh(Math.sin(lat * Math.PI / 180)) + Math.atanh(Math.sin(L * Math.PI / 180)));
+                return {
+                    x: pointX,
+                    y: pointY,
+                }
             },
             loadPins() {
                 //TODO: あとで消す
@@ -317,18 +367,31 @@
                 });
 
                 // TODO: あとでAPIに変える
+                this.updatePins();
                 navigator.geolocation.getCurrentPosition((position) => {
-                    this.testPins.push({
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude
-                    });
-                    this.updatePins();
+                    this.setUserLocation(position);
                 }, () => {
-                    this.updatePins();
                 }, {
                     enableHighAccuracy: true,
                     maximumAge: 5,
                 });
+            },
+            watchMyLocation() {
+                this.locationWatchId = navigator.geolocation.watchPosition((position) => {
+                    this.setUserLocation(position);
+                });
+            },
+            setUserLocation(position: any) {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                const xy = this.getGeo2Px(userLocation);
+
+                this.userLocation = {
+                    x: xy.x,
+                    y: xy.y
+                };
             },
             changeShare() {
                 this.shareFlag = !this.shareFlag;
@@ -358,6 +421,9 @@
         position: absolute;
         width: $size;
         height: $size;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
 
         i {
           display: flex;
@@ -394,7 +460,37 @@
             animation: 1s linear blink-animate infinite;
           }
         }
+      }
+    }
 
+    .user-location-parent {
+      position: relative;
+      top: -200%;
+
+      .user-location {
+        $size: 15px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        background-color: rgb(40, 53, 147);
+        border-radius: 50%;
+        transition: ease .1s transform;
+
+        &::before {
+          display: block;
+          content: '';
+          width: $size * 4;
+          height: $size* 4;
+          border-radius: 50%;
+          background-color: rgba(57, 73, 171, .3);
+          margin: -($size*3/2);
+          border: solid thin rgba(57, 73, 171, .6);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: 1.8s linear opacity-blink-animate infinite;
+        }
       }
     }
   }
@@ -402,6 +498,20 @@
   .theme--light.v-btn.v-btn--disabled {
     color: #d32f2f !important;
     z-index: 3;
+  }
+
+  @keyframes opacity-blink-animate {
+    0% {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(180deg);
+    }
   }
 
   @keyframes blink-animate {
