@@ -1,8 +1,18 @@
 import {messages} from "~/proto/web";
 
 export default class Api {
-  static getUrl(endpoint: string): string {
+  private static getUrl(endpoint: string): string {
     return '/api' + endpoint;
+  }
+
+  static addSpot(form: FormData): Promise<any> {
+    const u = this.getUrl('/spotInfo/create');
+    return fetch(u, {
+      method: "POST",
+      body: form
+    }).then((res: any) => {
+      return res.text();
+    });
   }
 
   static getAreas(): Promise<messages.AllAreaInfoResponse> {

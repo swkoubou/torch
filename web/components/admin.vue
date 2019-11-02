@@ -6,8 +6,8 @@
     </v-btn>
 
     <!-- Admin Dialog -->
-    <v-dialog v-model="dialogShow" fullscreen hide-overlay>
-      <v-card>
+    <v-dialog v-model="dialogShow" fullscreen>
+      <v-card :loading="isLoading">
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="dialogShow = false">
             <v-icon>mdi-close</v-icon>
@@ -48,16 +48,28 @@
     </v-dialog>
 
     <v-dialog v-model="timeDialogShow">
-      <v-card-title>時間を設定</v-card-title>
-      <v-card-text>
-        <p>開始時刻</p>
-        <v-time-picker format="24hr" v-model="startAndEndTimeTemp.startTime"></v-time-picker>
-        <p class="mt-4">終了時刻</p>
-        <v-time-picker format="24hr" v-model="startAndEndTimeTemp.endTime"></v-time-picker>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn block color="accent" large @click="applyTimeSettings">設定して閉じる</v-btn>
-      </v-card-actions>
+      <v-card>
+        <v-card-title>時間を設定</v-card-title>
+        <v-card-text>
+          <p>開始時刻</p>
+          <v-time-picker format="24hr" v-model="startAndEndTimeTemp.startTime"></v-time-picker>
+          <p class="mt-4">終了時刻</p>
+          <v-time-picker format="24hr" v-model="startAndEndTimeTemp.endTime"></v-time-picker>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn block color="accent" large @click="applyTimeSettings">設定して閉じる</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="errorDialog">
+      <v-card>
+        <v-card-title>エラー</v-card-title>
+        <v-card-text>
+          登録に失敗しました。
+          <pre>{{ errorMessage }}</pre>
+        </v-card-text>
+      </v-card>
     </v-dialog>
   </div>
 </template>
@@ -65,6 +77,8 @@
 <script lang="ts">
     import Vue from 'vue';
     import Api from "~/module/api";
+    import {structs} from "~/proto/web";
+    import options from "~/.nuxt/vuetify/options";
 
     interface startAndEndTimeInterface {
         startTime: string
@@ -75,6 +89,7 @@
         latAndLon: {
             lat: number
             lon: number
+            area: structs.AreaInfo | undefined
         }
         dialogShow: boolean
         timeDialogShow: boolean
@@ -85,6 +100,9 @@
         targetDate: string,
         startAndEndTime: startAndEndTimeInterface
         startAndEndTimeTemp: startAndEndTimeInterface
+        isLoading: boolean
+        errorDialog: boolean
+        errorMessage: string
     }
 
     export default Vue.extend({
@@ -93,6 +111,14 @@
         watch: {
             value(value) {
                 this.latAndLon = Object.assign({}, value);
+            },
+            errorDialog(val) {
+                if (!val && this.errorMessage !== "") {
+                    this.errorMessage = "";
+                }
+            },
+            errorMessage(val) {
+                this.errorDialog = val !== "";
             }
         },
         data(): AdminInterface {
@@ -100,6 +126,7 @@
                 latAndLon: {
                     lat: 0,
                     lon: 0,
+                    area: undefined
                 },
                 dialogShow: false,
                 timeDialogShow: false,
@@ -115,7 +142,10 @@
                 startAndEndTimeTemp: {
                     startTime: '',
                     endTime: '',
-                }
+                },
+                isLoading: false,
+                errorDialog: false,
+                errorMessage: '',
             };
         },
         methods: {
@@ -124,8 +154,10 @@
                 this.timeDialogShow = false;
             },
             save(): void {
-                const satDate = '2019-11/02';
-                const sunDate = '2019-11/03';
+                this.isLoading = true;
+
+                const satDate = '2019-11-02';
+                const sunDate = '2019-11-03';
 
                 let start = new Date();
                 let end = new Date();
@@ -151,6 +183,11 @@
                     }
                 }
 
+                let areaId = -1;
+                const area = this.latAndLon.area;
+                if (area !== undefined) {
+                    areaId = area.areaId;
+                }
                 let postData = new FormData();
 
                 // @ts-ignore
@@ -163,7 +200,7 @@
                     description: this.description,
                     loc_latitude: this.latAndLon.lat,
                     lon_latitude: this.latAndLon.lon,
-                    area_id: "!!!!!!!!!!!!!!!!!!",
+                    area_id: areaId,
                     start_year: start.getFullYear(),
                     start_month: start.getMonth(),
                     start_day: start.getDate(),
@@ -180,10 +217,17 @@
 
                 postData.append("option", JSON.stringify(option));
 
-                Api.addSpot(postData).then(() => {
-
-                })
-                this.dialogShow = false
+                Api.addSpot(postData).then((text: string) => {
+                    if (text === 'success') {
+                        this.dialogShow = false
+                    } else {
+                        this.errorMessage = text;
+                    }
+                }).catch((e) => {
+                    this.errorMessage = e.toString();
+                }).finally(() => {
+                    this.isLoading = false;
+                });
             }
         },
     });

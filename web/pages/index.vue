@@ -34,6 +34,8 @@
         <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }">
           <v-icon :class="p.class">mdi-map-marker</v-icon>
         </div>
+        <div class="pin admin-pin" v-if="isAdmin"
+             :style="{ 'top': adminLocation.y + 'px', 'left': adminLocation.x + 'px' }"></div>
       </div>
       <div class="user-location-parent" :style="mapStyle">
         <div class="user-location"
@@ -73,8 +75,8 @@
     import helpDialog from "../components/helpDialog.vue";
     import Api from "~/module/api";
     import contactDialog from "../components/contactDialog.vue";
-    import * as geolib from 'geolib';
     import GeoUtils from "~/utils/geoUtils";
+    import {structs} from "~/proto/web";
 
     interface pinInfo {
         x: number
@@ -124,7 +126,9 @@
         adminLatAndLon: {
             lat: number
             lonL: number
-        }
+            area: structs.AreaInfo | undefined
+        },
+        adminLocation: userLocation
     }
 
     export default Vue.extend({
@@ -180,65 +184,26 @@
                 areas: [],
                 adminLatAndLon: {
                     lat: 0,
-                    lonL: 0
+                    lonL: 0,
+                    area: undefined
+                },
+                adminLocation: {
+                    x: 0,
+                    y: 0,
                 }
             };
         },
         computed: {
             areaName(): string {
                 const defaultName = '未開の地';
-                const centerArray: Array<any> = [];
-                let centerWithName = new Map<string, string>();
                 const userLat = this.userTruthLocation.lat;
                 const userLon = this.userTruthLocation.lon;
 
-                this.areas.forEach((v) => {
-                    const leftTop = v.region.leftUp;
-                    const rightBottom = v.region.rightBottom;
-
-                    const center = geolib.getCenter([{
-                        latitude: leftTop.latitude,
-                        longitude: leftTop.longitude
-                    }, {
-                        latitude: rightBottom.latitude,
-                        longitude: rightBottom.longitude
-                    }]);
-                    if (!center) {
-                        return;
-                    }
-
-                    const key: string = center.latitude + '_' + center.longitude;
-                    centerWithName.set(key, v.name);
-                    centerArray.push(center);
-                });
-
-                const mostNear: any = geolib.findNearest({
-                    latitude: userLat,
-                    longitude: userLon
-                }, centerArray);
-                if (typeof mostNear === "undefined") {
+                const info = GeoUtils.containArea(this.areas, userLat, userLon);
+                if (typeof info === "undefined") {
                     return defaultName;
-                }
-
-                const distance = geolib.getPreciseDistance({
-                    latitude: mostNear.latitude,
-                    longitude: mostNear.longitude,
-                }, {
-                    latitude: userLat,
-                    longitude: userLon
-                });
-                const distanceM = geolib.convertDistance(distance, 'm');
-                // 500M以上離れていればエリアにいないと判定
-                if (distanceM > 500) {
-                    return defaultName;
-                }
-
-                const key = mostNear.latitude + '_' + mostNear.longitude;
-                const name = centerWithName.get(key);
-                if (typeof name === "string") {
-                    return name;
                 } else {
-                    return defaultName;
+                    return info.name;
                 }
             }
         },
@@ -548,6 +513,11 @@
 
                 this.$set(this.adminLatAndLon, 'lat', pos.lat);
                 this.$set(this.adminLatAndLon, 'lon', pos.lon);
+                this.$set(this.adminLatAndLon, 'area', GeoUtils.containArea(this.areas, pos.lat, pos.lon));
+                this.adminLocation = {
+                    x: x - this.touchStartPos.backPosX,
+                    y: y - this.touchStartPos.backPosY,
+                };
             }
         },
     })
@@ -613,6 +583,13 @@
             animation: 1s linear blink-animate infinite;
           }
         }
+      }
+
+      .admin-pin {
+        width: 15px;
+        height: 15px;
+        transform: translate(-50%, -50%);
+        background-color: rgba(red, .8);
       }
     }
 
