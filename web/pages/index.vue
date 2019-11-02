@@ -39,6 +39,14 @@
         <div class="user-location"
              :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
       </div>
+      <div class="area-range-test" :style="mapStyle">
+        <div class="area-rect" v-for="a in areas" :style="{
+        transform: 'translate('+a.leftUp.x + 'px, '+a.leftUp.y + 'px)',
+        width: a.widht + 'px',
+        height: a.height + 'px',
+        }">{{ a.name }}
+        </div>
+      </div>
     </div>
 
     <!-- いいねボタン -->
@@ -60,6 +68,8 @@
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
     import helpDialog from "../components/helpDialog.vue";
+    import {messages, structs} from "~/proto/web";
+    import Api from "~/module/api";
 
     interface pinInfo {
         x: number
@@ -104,6 +114,7 @@
         menuValue: boolean
         shareFlag: boolean
         helpFlag: boolean
+        areas: Array<any>
     }
 
     export default Vue.extend({
@@ -155,6 +166,7 @@
                 menuValue: false,
                 shareFlag: false,
                 helpFlag: false,
+                areas: []
             };
         },
         computed: {
@@ -169,6 +181,7 @@
             }
 
             this.helpFlag = localStorage.getItem('help-dialog') != 'true';
+            this.loadAreas();
         },
         mounted() {
             const mapParent: any = this.$refs['map-parent'];
@@ -415,6 +428,28 @@
             changeShare() {
                 this.shareFlag = !this.shareFlag;
             },
+            loadAreas() {
+                Api.getAreas().then(res => {
+                    const areas = res.areaInfos;
+                    areas.forEach((v: any) => {
+                        const leftUp = v.region.leftUp;
+                        const leftUpPx = this.getGeo2Px({
+                            lat: leftUp.latitude,
+                            lon: leftUp.longitude
+                        });
+                        const rightBottom = v.region.rightBottom;
+                        const rightBottomPx = this.getGeo2Px({
+                            lat: rightBottom.latitude,
+                            lon: rightBottom.longitude
+                        });
+                        v.leftUp = leftUpPx;
+                        v.width = rightBottomPx.x - leftUpPx.x;
+                        v.height = rightBottomPx.y - leftUpPx.y;
+                    });
+
+                    this.areas = areas;
+                });
+            }
         },
     })
 </script>
@@ -510,6 +545,16 @@
           border-right-color: transparent;
           animation: 1.8s linear opacity-blink-animate infinite;
         }
+      }
+    }
+
+    .area-range-test {
+      position: relative;
+      top: -300%;
+
+      .area-rect {
+        position: absolute;
+        border: solid 1px rgba(blue, .5);
       }
     }
   }
