@@ -1,3 +1,6 @@
+import * as geolib from 'geolib';
+import {structs} from "~/proto/web";
+
 export default class GeoUtils {
   public static start = {
     lat: 35.48832,
@@ -20,7 +23,7 @@ export default class GeoUtils {
   }
 
   static convertPosFromPx(x: number, y: number): any {
-    let lon = x *  180 / 20037508.34 ;
+    let lon = x * 180 / 20037508.34;
     let lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360 / Math.PI - 90;
 
     return {
@@ -29,6 +32,68 @@ export default class GeoUtils {
     }
   }
 
+  static containArea(areas: structs.AreaInfo[], lat: number, lon: number): structs.AreaInfo | undefined {
+    let centerWithName = new Map<string, structs.AreaInfo>();
+    const centerArray: Array<any> = [];
+
+    areas.forEach((v: structs.AreaInfo) => {
+      if (v.region === null || v.region === undefined) {
+        return;
+      }
+      const leftTop = v.region.leftUp;
+      const rightBottom = v.region.rightBottom;
+
+      if (leftTop === null || rightBottom === null || typeof leftTop !== "object" || typeof rightBottom !== "object" ||
+        typeof leftTop.latitude !== "number" || typeof leftTop.longitude !== "number"
+        || typeof rightBottom.latitude !== "number" || typeof rightBottom.longitude !== "number") {
+        return;
+      }
+
+      const center = geolib.getCenter([{
+        latitude: leftTop.latitude,
+        longitude: leftTop.longitude
+      }, {
+        latitude: rightBottom.latitude,
+        longitude: rightBottom.longitude
+      }]);
+      if (!center) {
+        return;
+      }
+
+      const key: string = center.latitude + '_' + center.longitude;
+      centerWithName.set(key, v);
+      centerArray.push(center);
+    });
+
+    const mostNear: any = geolib.findNearest({
+      latitude: lat,
+      longitude: lon
+    }, centerArray);
+    if (typeof mostNear === "undefined") {
+      return;
+    }
+
+    const distance = geolib.getPreciseDistance({
+      latitude: mostNear.latitude,
+      longitude: mostNear.longitude,
+    }, {
+      latitude: lat,
+      longitude: lon
+    });
+    const distanceM = geolib.convertDistance(distance, 'm');
+    // 500M以上離れていればエリアにいないと判定
+    if (distanceM > 500) {
+      return;
+    }
+
+    const key = mostNear.latitude + '_' + mostNear.longitude;
+    const areaInfo = centerWithName.get(key);
+    if (typeof areaInfo !== "undefined") {
+      return areaInfo;
+    } else {
+      return;
+    }
+  }
 }
 
 
