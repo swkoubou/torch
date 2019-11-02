@@ -9,7 +9,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-list-item>
+        <v-list-item @click="helpFlag=true">
           <v-list-item-title>ヘルプ</v-list-item-title>
         </v-list-item>
         <v-list-item @click="changeShare">
@@ -44,7 +44,7 @@
 
     <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
-    <help-dialog></help-dialog>
+    <help-dialog v-model="helpFlag"></help-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -91,6 +91,7 @@
         testPins: Array<any>
         menuValue: boolean
         shareFlag: boolean
+        helpFlag: boolean
     }
 
     export default Vue.extend({
@@ -132,6 +133,7 @@
                 testPins: [],
                 menuValue: false,
                 shareFlag: false,
+                helpFlag: false,
             };
         },
         computed: {

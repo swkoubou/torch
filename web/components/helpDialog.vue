@@ -95,7 +95,8 @@
     }
 
     export default Vue.extend({
-        name: "helpDialog",
+        name: "help-dialog",
+        props: ['value'],
         data(): helpDialogInterface {
             return {
                 dialog: true,
@@ -103,12 +104,19 @@
             }
         },
         watch: {
+            dialog(value: boolean) {
+                this.$emit('input', value);
+            },
+            value(value: boolean) {
+                this.dialog = value;
+                this.circleStatus = 0;
+            },
             circleStatus(value: number, old: number) {
                 const diff = value - old;
-                if (diff < 0) {
+                if (diff < 0 && value === 0 && old === 5) {
                     this.closeModal();
                 }
-            }
+            },
         },
         methods: {
             closeModal() {
