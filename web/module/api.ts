@@ -72,4 +72,21 @@ export default class Api {
       return messages.AreaLikeResponse.decode(_buf);
     })
   }
+
+  static pinLike(pinId: number): Promise<messages.SpotLikeResponse> {
+    const req = new messages.SpotLikeRequest();
+    req.spotId = pinId;
+    const bin = messages.SpotLikeRequest.encode(req).finish();
+
+    const u = this.getUrl('/spotInfo/like');
+    return fetch(u, {
+      method: 'POST',
+      body: bin,
+    }).then(res => {
+      return res.arrayBuffer();
+    }).then((buf: ArrayBuffer) => {
+      const _buf = new Uint8Array(buf);
+      return messages.SpotLikeResponse.decode(_buf);
+    })
+  }
 }
