@@ -9,7 +9,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-list-item>
+        <v-list-item @click="helpFlag=true">
           <v-list-item-title>ヘルプ</v-list-item-title>
         </v-list-item>
         <v-list-item @click="changeShare">
@@ -48,6 +48,7 @@
 
     <pin-detail></pin-detail>
     <share-dialog v-if="shareFlag" @change="changeShare"></share-dialog>
+    <help-dialog v-model="helpFlag"></help-dialog>
 
     <admin v-if="isAdmin"></admin>
   </div>
@@ -58,6 +59,7 @@
     import admin from '../components/admin.vue';
     import pinDetail from '../components/pinDetail.vue';
     import shareDialog from "../components/shareDialog.vue";
+    import helpDialog from "../components/helpDialog.vue";
 
     interface pinInfo {
         x: number
@@ -101,11 +103,12 @@
         userTruthLocation: any
         menuValue: boolean
         shareFlag: boolean
+        helpFlag: boolean
     }
 
     export default Vue.extend({
         name: 'index',
-        components: {admin, pinDetail, shareDialog},
+        components: {admin, pinDetail, shareDialog, helpDialog},
         data(): indexData {
             return {
                 isAdmin: false,
@@ -151,6 +154,7 @@
                 locationWatchId: 0,
                 menuValue: false,
                 shareFlag: false,
+                helpFlag: false,
             };
         },
         computed: {
@@ -163,6 +167,8 @@
             if ('admin' in query) {
                 this.isAdmin = query['admin'] === 'hoo0Jaek8jooTeeti0eiciedeithougee4aexooGhaiNgieDa9gio6jaipeevach';
             }
+
+            this.helpFlag = localStorage.getItem('help-dialog') != 'true';
         },
         mounted() {
             const mapParent: any = this.$refs['map-parent'];
