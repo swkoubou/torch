@@ -6,8 +6,8 @@
     </v-btn>
 
     <!-- Admin Dialog -->
-    <v-dialog v-model="dialogShow" fullscreen>
-      <v-card style="background: white">
+    <v-dialog v-model="dialogShow" fullscreen hide-overlay>
+      <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="dialogShow = false">
             <v-icon>mdi-close</v-icon>
@@ -19,27 +19,31 @@
           </v-toolbar-items>
         </v-toolbar>
 
-        <v-form class="px-3">
-          <v-text-field label="緯度" type="number" v-model="latAndLon.lon"></v-text-field>
-          <v-text-field label="経度" type="number" v-model="latAndLon.lat"></v-text-field>
-          <v-file-input label="写真" ref="photo"></v-file-input>
-          <v-text-field label="タイトル" v-model="title"></v-text-field>
-          <p>期間</p>
-          <v-checkbox label="すべての期間" v-model="allTime"></v-checkbox>
-          <v-radio-group :disabled="allTime">
-            <v-radio label="土曜日" value="1"></v-radio>
-            <v-radio label="日曜日" value="2"></v-radio>
-            <v-checkbox label="終日" v-model="allDate"></v-checkbox>
-            <v-btn :disabled="allTime || allDate" color="accent" @click="timeDialogShow=true">開始時間を設定</v-btn>
-            <p>{{ startAndEndTime.startTime }} 〜 {{ startAndEndTime.endTime }}</p>
-          </v-radio-group>
+        <v-card-text class="mt-4">
+          <v-form>
+            <v-text-field label="緯度" type="number" v-model="latAndLon.lon"></v-text-field>
+            <v-text-field label="経度" type="number" v-model="latAndLon.lat"></v-text-field>
+            <div style="overflow-x: hidden">
+              <v-file-input label="写真" accept="image/*" ref="photo" show-size style="width:100%"></v-file-input>
+            </div>
+            <v-text-field label="タイトル" v-model="title"></v-text-field>
+            <p>期間</p>
+            <v-checkbox label="すべての期間" v-model="allTime"></v-checkbox>
+            <v-radio-group :disabled="allTime">
+              <v-radio label="土曜日" value="1"></v-radio>
+              <v-radio label="日曜日" value="2"></v-radio>
+              <v-checkbox label="終日" v-model="allDate"></v-checkbox>
+              <v-btn :disabled="allTime || allDate" color="accent" @click="timeDialogShow=true">開始時間を設定</v-btn>
+              <p>{{ startAndEndTime.startTime }} 〜 {{ startAndEndTime.endTime }}</p>
+            </v-radio-group>
 
-          <v-textarea label="説明" v-model="description"></v-textarea>
+            <v-textarea label="説明" v-model="description"></v-textarea>
 
-          <v-col class="text-right" cols="12" sm="4">
-            <v-btn color="accent">SAVE</v-btn>
-          </v-col>
-        </v-form>
+            <v-col class="text-right" cols="12" sm="4">
+              <v-btn color="accent">SAVE</v-btn>
+            </v-col>
+          </v-form>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
