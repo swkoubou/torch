@@ -12,3 +12,5 @@ server/torch_server
 *.pb.go
 
 web/proto/*
+
+/dist/
