@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	. "github.com/ahmetb/go-linq"
 	"github.com/jinzhu/gorm"
 	"github.com/swkoubou/torch/server/model/types"
 )
@@ -43,5 +44,21 @@ func (model *LikeSpotModelImpl) CountLikes(spotID uint) (count uint, err error) 
 }
 
 func (model *LikeSpotModelImpl) CountAllLikes(targetSpots []types.SpotInfo) (counted []types.SpotInfo, err error) {
-	panic("implement me")
+	From(targetSpots).
+		Select(func(a interface{}) interface{} {
+			spot, isCast := a.(types.SpotInfo)
+			if !isCast {
+				return a // キャストできなくてpanicは避けたいのでそのまま返す
+			}
+
+			spot.Likes, err = model.CountLikes(spot.ID)
+			if err != nil {
+				spot.Likes = 0
+				return spot
+			}
+
+			return spot
+		}).ToSlice(counted)
+
+	return counted, nil
 }
