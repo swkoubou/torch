@@ -4,6 +4,7 @@
 
 ### Docker
 docker/mariadb
+server/assets/spots
 
 ### Server
 server/torch_server

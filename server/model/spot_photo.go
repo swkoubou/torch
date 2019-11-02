@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"path"
@@ -29,7 +30,7 @@ func (model *SpotPhotoModelImpl) Add(image *multipart.FileHeader) (fileName stri
 	// 書き込み先ディレクトリがあるか確認し、なければ作る
 	dstFileName, dstDir, dstFilePath := model.generateFilePathSet(srcFileExt)
 	if _, err := os.Stat(dstDir); os.IsNotExist(err) {
-		err = os.Mkdir(dstDir, 0777)
+		err = os.MkdirAll(dstDir, 0777)
 		if err != nil {
 			return "", nil
 		}
@@ -53,9 +54,10 @@ func (model *SpotPhotoModelImpl) Add(image *multipart.FileHeader) (fileName stri
 
 func (model *SpotPhotoModelImpl) generateFilePathSet(ext string) (fileName, pathDir, filePath string) {
 	uuidStr := uuid.New().String()
-	fileName = fmt.Sprintf("%s.%s", uuidStr, ext)
+	fileName = fmt.Sprintf("%s%s", uuidStr, ext)
 	pathDir = "./assets/spots/"
 	filePath = path.Join("./assets/spots/", fileName)
+	log.Printf("%+v\n", filePath)
 
 	return fileName, pathDir, filePath
 }
