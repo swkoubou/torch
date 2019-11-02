@@ -155,10 +155,13 @@
                 Api.getPinInfo(this.id).then(res => {
                     const info = res.spotInfo;
                     if (info === undefined || info == null) {
+                        this.errorMessage = '正常にデータを転送できませんでした';
                         return;
                     }
                     this.info = info;
-                })
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー';
+                });
             },
             shareTwitter(): void {
                 let text = this.pinName + '- TORCH 神奈川工科大学学園祭・幾徳祭';
@@ -181,7 +184,7 @@
                 Api.pinLike(this.id).then(res => {
                     if (res.message !== 'success') {
                         this.errorMessage = '不明なエラーです'
-                    }else{
+                    } else {
                         this.loadParams();
                     }
                 }).catch(() => {
