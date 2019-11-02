@@ -59,8 +59,8 @@
                 height: number
             }
         }
-        mapParentStyle: object
-        mapStyle: object
+        mapParentStyle: any
+        mapStyle: any
         realScale: number
         scaleFlag: boolean
         touches: number
@@ -256,7 +256,7 @@
                     this.pins.push({x: pxX, y: pxY});
                 })
             },
-            getGeo2Px(testPin: object): object {
+            getGeo2Px(testPin: any): any {
                 const map: any = this.$refs.map;
 
                 const iw = map.offsetWidth;
