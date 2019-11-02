@@ -8,24 +8,21 @@
         <v-card-text>
           <v-flex class="d-flex px-2 mt-4 mb-2">
             <!-- 各種SNSシェア -->
-            <v-btn fab class="mx-1 ml-auto" @click="shareTwitter">
+            <v-btn fab x-large class="mx-1 ml-auto" @click="shareTwitter">
               <v-icon color="#00acee">mdi-twitter</v-icon>
             </v-btn>
-            <v-btn fab class="mx-1 ml-auto" @click="shareFaceBook">
+            <v-btn fab x-large class="mx-1 ml-auto" @click="shareFaceBook">
               <v-icon color="#3B5998">mdi-facebook</v-icon>
             </v-btn>
-            <v-btn fab class="mx-1 ml-auto" @click="shareLine">
+            <v-btn fab x-large class="mx-1 ml-auto" @click="shareLine">
               <v-icon color="#1dcd00">fab fa-line</v-icon>
             </v-btn>
           </v-flex>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            color="primary"
-            text
-            @click="parentDialog"
-          >
-            Close
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="parentDialog">
+            閉じる
           </v-btn>
         </v-card-actions>
       </v-card>
