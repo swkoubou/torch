@@ -28,3 +28,11 @@ generate_pb_web:
 clean_pb_web:
 	@rm -rf web/proto/*.js
 	@rm -rf web/proto/*.d.ts
+
+dist:
+	@rm -rf dist/
+	@mkdir -p dist/
+	@cd server && env GOOS=linux go build -o ../dist/server
+	@cd web && npm run build
+	mv web/dist dist/web
+	mkdir -p dist/asset
