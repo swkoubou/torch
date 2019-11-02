@@ -16,7 +16,8 @@
     "@nuxt/typescript-runtime": "^0.2.2",
     "@nuxtjs/pwa": "^3.0.0-beta.19",
     "nuxt": "^2.0.0",
-    "nuxt-leaflet": "0.0.19"
+    "nuxt-leaflet": "0.0.19",
+    "protobufjs": "^6.8.8"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.3.2",
