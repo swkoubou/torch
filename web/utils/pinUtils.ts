@@ -24,7 +24,7 @@ export default class PinUtils {
     const start = this.convertITimeToDateTime(eventSpan.startingAt).getTime();
     const end = this.convertITimeToDateTime(eventSpan.endingAt).getTime();
     const now = new Date().getTime();
-    
+
     if (now > start && now < end) {
       domClass = 'active';
 
