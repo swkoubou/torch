@@ -41,7 +41,14 @@
         height: a.height + 'px',
         opacity: a.opacity ,
         }"></div>
+
+        <div class="like-effect" v-for="i in likeEffects" :key="i.createdTime"
+             :style="{ 'top': i.y + 'px', 'left': i.x + 'px' }"
+             :class="'like-effect'+i.effectType">
+          <v-icon color="primary">mdi-heart</v-icon>
+        </div>
       </div>
+
       <div class="pin-parent" ref="map-action" :style="mapStyle">
         <div v-for="p in pins" class="pin" :style="{ 'top': p.y + 'px', 'left': p.x + 'px' }"
              v-on:touchstart="showDetail(p)">
@@ -53,7 +60,7 @@
     </div>
 
     <!-- いいねボタン -->
-    <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin">
+    <v-btn fixed bottom right fab large outlined color="primary" v-if="!isAdmin" v-on:touchstart="sendLike">
       <v-icon color="primary">mdi-heart</v-icon>
     </v-btn>
 
@@ -62,6 +69,23 @@
     <contact-dialog v-model="contactFlag"></contact-dialog>
 
     <admin v-if="isAdmin" v-model="adminLatAndLon"></admin>
+
+    <!-- エラー -->
+    <v-dialog v-model="errorDialog">
+      <v-card>
+        <v-card-title>エラー</v-card-title>
+        <v-card-text>
+          <p>エラーが発生しました。</p>
+          <p>{{ errorMessage }}</p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-flex xs3 offset-xs9 align-end>
+            <v-btn class="ml-auto" color="accent" right @click="errorDialog = false">閉じる</v-btn>
+          </v-flex>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -127,6 +151,9 @@
             area: structs.AreaInfo | undefined
         },
         adminLocation: userLocation
+        likeEffects: Array<any>
+        errorMessage: string
+        errorDialog: boolean
     }
 
     export default Vue.extend({
@@ -188,7 +215,10 @@
                 adminLocation: {
                     x: 0,
                     y: 0,
-                }
+                },
+                likeEffects: [],
+                errorMessage: '',
+                errorDialog: false
             };
         },
         computed: {
@@ -202,6 +232,17 @@
                     return defaultName;
                 } else {
                     return info.name;
+                }
+            },
+            currentAreaId(): number | undefined {
+                const userLat = this.userTruthLocation.lat;
+                const userLon = this.userTruthLocation.lon;
+
+                const info = GeoUtils.containArea(this.areas, userLat, userLon);
+                if (typeof info === "undefined") {
+                    return undefined;
+                } else {
+                    return info.areaId;
                 }
             }
         },
@@ -267,6 +308,16 @@
             }
 
             this.watchMyLocation();
+        },
+        watch:{
+            errorDialog(val) {
+                if (!val && this.errorMessage !== "") {
+                    this.errorMessage = "";
+                }
+            },
+            errorMessage(val) {
+                this.errorDialog = val !== "";
+            }
         },
         beforeDestroy(): void {
             navigator.geolocation.clearWatch(this.locationWatchId);
@@ -499,7 +550,46 @@
             showDetail(pin: any) {
                 const id = pin['id'];
                 this.$router.push('/spot/' + id);
-            }
+            },
+            sendLike() {
+                const areaId = this.currentAreaId;
+                if (typeof areaId === "undefined") {
+                    return;
+                }
+
+                const xRand = 30 - Math.round(Math.random() * 30);
+                const yRand = 30 - Math.round(Math.random() * 30);
+                const effectRand = Math.ceil(Math.random() * 2);
+
+                const now = new Date().getTime();
+                let e = {
+                    createdTime: now,
+                    effectType: effectRand,
+                    x: this.userLocation.x + xRand,
+                    y: this.userLocation.y + yRand,
+                };
+                this.likeEffects.push(e);
+
+                if (this.likeEffects.length > 300) {
+                    let deleteKeys = Array<number>();
+                    this.likeEffects.forEach((v, index) => {
+                        const isDelete = now - v.createdTime > 800;
+                        if (isDelete) {
+                            deleteKeys.push(index);
+                        }
+                    });
+                    deleteKeys.forEach((i) => {
+                        this.$delete(this.likeEffects, i);
+                    });
+                }
+                Api.areaLike(areaId).then(res => {
+                    if (res.message !== 'success') {
+                        this.errorMessage = '不明なエラーです'
+                    }
+                }).catch((e) => {
+                    this.errorMessage = 'ネットワークエラー'
+                })
+            },
         },
     })
 </script>
@@ -558,6 +648,33 @@
         border-radius: 50%;
         border: solid 1px rgba(red, .3);
         background-color: rgba(red, .1);
+      }
+
+      .like-effect {
+        display: flex;
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        top: 200px;
+        left: 200px;
+        margin: -100px;
+        border: solid 1px rgba(red, .5);
+        background-color: rgba(red, .15);
+        justify-content: center;
+        align-items: center;
+
+        &.like-effect1 {
+          animation: 0.5s ease like-effect forwards;
+        }
+
+        &.like-effect2 {
+          animation: 0.5s ease like-effect2 forwards;
+        }
+
+        i {
+          font-size: 120px;
+        }
       }
     }
 
@@ -661,6 +778,46 @@
     }
     100% {
       border-color: rgba(198, 40, 40, 1);
+    }
+  }
+
+  @keyframes like-effect {
+    0% {
+      transform: scale(0.2) rotate(80deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    65% {
+      opacity: 1;
+    }
+    80% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes like-effect2 {
+    0% {
+      transform: scale(0.2) rotate(-80deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    65% {
+      opacity: 1;
+    }
+    80% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0;
     }
   }
 </style>

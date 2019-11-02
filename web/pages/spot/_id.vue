@@ -32,7 +32,7 @@
 
             <!-- いいね -->
             <div class="ml-auto mr-1">
-              <v-btn fab>
+              <v-btn fab @click="sendLike">
                 <v-icon color="primary">mdi-heart</v-icon>
               </v-btn>
               <p class="caption text-center" style="color: #888888">{{ pinFavCount }}</p>
@@ -52,6 +52,23 @@
         </v-card>
       </v-row>
     </v-container>
+
+    <!-- エラー -->
+    <v-dialog v-model="errorDialog">
+      <v-card>
+        <v-card-title>エラー</v-card-title>
+        <v-card-text>
+          <p>エラーが発生しました。</p>
+          <p>{{ errorMessage }}</p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-flex xs3 offset-xs9 align-end>
+            <v-btn class="ml-auto" color="accent" right @click="errorDialog = false">閉じる</v-btn>
+          </v-flex>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -62,6 +79,8 @@
 
     interface _idInterface {
         info: structs.ISpotInfo | undefined
+        errorMessage: string
+        errorDialog: boolean
     }
 
     export default Vue.extend({
@@ -69,6 +88,8 @@
         data(): _idInterface {
             return {
                 info: undefined,
+                errorMessage: '',
+                errorDialog: false
             }
         },
         computed: {
@@ -116,6 +137,16 @@
                 return 'Unknown';
             }
         },
+        watch: {
+            errorDialog(val) {
+                if (!val && this.errorMessage !== "") {
+                    this.errorMessage = "";
+                }
+            },
+            errorMessage(val) {
+                this.errorDialog = val !== "";
+            }
+        },
         methods: {
             close(): void {
                 this.$router.push('/');
@@ -145,6 +176,17 @@
                 let message = encodeURIComponent(text + '\r\n' + location.href);
                 let shareURL = `http://line.me/R/msg/text/?${message}`;
                 open(shareURL, "_blank");
+            },
+            sendLike() {
+                Api.pinLike(this.id).then(res => {
+                    if (res.message !== 'success') {
+                        this.errorMessage = '不明なエラーです'
+                    }else{
+                        this.loadParams();
+                    }
+                }).catch(() => {
+                    this.errorMessage = 'ネットワークエラー'
+                })
             }
         },
         created(): void {
