@@ -20,13 +20,10 @@ func ToSpotInfoResponse(spotInfo *types.SpotInfo) *messages.SpotInfoResponse {
 func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResponse {
 	var pbAreaInfos []*structs.AreaInfo
 
-	From(areaInfos).
-		Select(func(a interface{}) interface{} {
-			area := a.(types.AreaInfo)
-			pbArea := ToPbAreaInfo(&area)
-			pbAreaInfos = append(pbAreaInfos, pbArea)
-			return area
-		})
+	for _, v := range areaInfos {
+		pbArea := ToPbAreaInfo(&v)
+		pbAreaInfos = append(pbAreaInfos, pbArea)
+	}
 
 	return &messages.AllAreaInfoResponse{
 		AreaInfos: pbAreaInfos,
