@@ -7,7 +7,7 @@
       <v-toolbar-title class="mx-2 mt-1">プライバシーポリシー</v-toolbar-title>
     </v-app-bar>
     <v-container id="scroll-target" style="max-height: 90vh" class="overflow-y-auto">
-      <v-row v-scroll:#scroll-target="onScroll" style="height: 1000px;">
+      <v-row>
         <v-card>
           <v-card-title>利用規約</v-card-title>
           <v-card-text class="caption">
@@ -62,6 +62,7 @@
             swkは、本アプリケーションのバージョンアップに伴って、本アプリケーション・プライバシーポリシーを変更することがあります。変更内容については、新バージョンのアプリケーションに付随するアプリケーション・プライバシーポリシーをご参照ください。
           </v-card-text>
         </v-card>
+        <div style="height: 300px;"></div>
       </v-row>
     </v-container>
   </div>

@@ -101,6 +101,7 @@
             2. 本サービスに関して紛争が生じた場合には，swkの本店所在地を管轄する裁判所を専属的合意管轄とします。<br>
           </v-card-text>
         </v-card>
+        <div style="height: 300px;"></div>
       </v-row>
     </v-container>
   </div>
