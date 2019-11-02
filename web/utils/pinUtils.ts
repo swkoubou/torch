@@ -53,7 +53,6 @@ export default class PinUtils {
     if (time === undefined || time == null) {
       return new Date();
     }
-
-    return new Date(time.year + '-' + time.month + '-' + time.day + ' ' + time.hour + ':' + time.minute + ':' + time.second)
+    return new Date(time.year + '/' + time.month + '/' + time.day + ' ' + time.hour + ':' + time.minute + ':' + time.second);
   }
 }
