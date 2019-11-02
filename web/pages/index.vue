@@ -585,10 +585,8 @@
                 Api.areaLike(areaId).then(res => {
                     if (res.message !== 'success') {
                         this.errorMessage = '不明なエラーです'
-                    }else{
-                        this.loadParams();
                     }
-                }).catch(() => {
+                }).catch((e) => {
                     this.errorMessage = 'ネットワークエラー'
                 })
             },
