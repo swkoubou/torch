@@ -11,7 +11,7 @@ message AreaInfo {
     string name = 2; // エリアの名前
     Rectangle region = 3; // エリアの矩形領域
 
-    string hot_score = 10; // ホット度合い(高い方がホット)
+    double hot_score = 10; // ホット度合い(高い方がホット)
 
     uint32 sum_like_count = 20; // 各スポットのいいね数を含む合計いいね数
     uint32 specific_like_count = 21; // エリアのみのいいね数
