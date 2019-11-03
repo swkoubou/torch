@@ -67,6 +67,7 @@ func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,
+		HotScore:      spotInfo.HotLevel,
 		Location: &structs.Location{
 			Latitude:  spotInfo.Latitude,
 			Longitude: spotInfo.Longitude,

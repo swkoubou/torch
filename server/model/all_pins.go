@@ -61,10 +61,10 @@ func (model *AllSpotsModelImpl) GetWithHotLevel() (spots []types.SpotInfo, err e
 	}
 
 	// 盛り上がり具合をロードする
-	spots, err = model.hotLevelModel.CalcSpotHotLevel(spots)
+	spotsWithHot, err := model.hotLevelModel.CalcSpotHotLevel(spots)
 	if err != nil {
 		return nil, err
 	}
 
-	return spots, nil
+	return spotsWithHot, nil
 }

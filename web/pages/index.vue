@@ -661,8 +661,8 @@
         overflow: hidden;
         font-size: 8px;
         border-radius: 50%;
-        border: solid 1px rgba(red, .3);
-        background-color: rgba(red, .1);
+        border: solid 1px rgba(red, .6);
+        background-color: rgba(red, .5);
       }
 
       .like-effect {

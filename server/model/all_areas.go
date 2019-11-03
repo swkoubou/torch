@@ -73,10 +73,10 @@ func (model *AllAreasModelImpl) GetWithHotLevel() (areas []types.AreaInfo, err e
 	spots, err := model.allSpotsModel.Get()
 
 	// 盛り上がり具合をロードする
-	areas, err = model.hotLevelModel.CalcAreaHotLevel(areas, spots)
+	areasWithHot, err := model.hotLevelModel.CalcAreaHotLevel(areas, spots)
 	if err != nil {
 		return nil, err
 	}
 
-	return areas, nil
+	return areasWithHot, nil
 }

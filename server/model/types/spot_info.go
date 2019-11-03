@@ -33,3 +33,7 @@ func (spot *SpotInfo) GetLocation() Location {
 		Longitude: spot.Longitude,
 	}
 }
+
+func (spot *SpotInfo) GetHourSpan() float64 {
+	return spot.StartingAt.Sub(spot.EndingAt).Hours()
+}
