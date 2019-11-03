@@ -640,33 +640,6 @@
         border: solid 1px rgba(red, .6);
         background-color: rgba(red, .5);
       }
-
-      .like-effect {
-        display: flex;
-        position: absolute;
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        top: 200px;
-        left: 200px;
-        margin: -100px;
-        border: solid 1px rgba(red, .5);
-        background-color: rgba(red, .15);
-        justify-content: center;
-        align-items: center;
-
-        &.like-effect1 {
-          animation: 0.5s ease like-effect forwards;
-        }
-
-        &.like-effect2 {
-          animation: 0.5s ease like-effect2 forwards;
-        }
-
-        i {
-          font-size: 120px;
-        }
-      }
     }
 
     .user-location-parent {
@@ -696,6 +669,33 @@
           border-left-color: transparent;
           border-right-color: transparent;
           animation: 1.8s linear opacity-blink-animate infinite;
+        }
+      }
+
+      .like-effect {
+        display: flex;
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        top: 200px;
+        left: 200px;
+        margin: -100px;
+        border: solid 1px rgba(red, .5);
+        background-color: rgba(red, .15);
+        justify-content: center;
+        align-items: center;
+
+        &.like-effect1 {
+          animation: 0.5s ease like-effect forwards;
+        }
+
+        &.like-effect2 {
+          animation: 0.5s ease like-effect2 forwards;
+        }
+
+        i {
+          font-size: 120px;
         }
       }
     }
