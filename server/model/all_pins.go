@@ -20,6 +20,7 @@ func NewAllSpotsModel(
 	return &AllSpotsModelImpl{
 		db:            db,
 		hotLevelModel: hotLevelModel,
+		likeSpotModel: likeSpotModel,
 	}
 }
 
