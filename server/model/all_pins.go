@@ -66,5 +66,12 @@ func (model *AllSpotsModelImpl) GetWithHotLevel() (spots []types.SpotInfo, err e
 		return nil, err
 	}
 
-	return spotsWithHot, nil
+	// いいね数を再度取得する
+	countedSpots, err := model.likeSpotModel.CountAllLikes(spotsWithHot)
+	if err != nil {
+		errMsg := "AllAreasModel.Get(): Can't count area likes.; " + err.Error()
+		return nil, errors.New(errMsg)
+	}
+
+	return countedSpots, nil
 }
