@@ -20,7 +20,7 @@ func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, t
 	mean, variance := stat.MeanVariance(likeArray, nil)
 
 	for _, area := range targetAreas {
-		area.HotLevel = model.calcHotLevel(float64(area.Likes), mean, variance, 1)
+		area.HotLevel = model.calcHotLevel(float64(area.Likes), mean, variance, 3)
 		calculated = append(calculated, area)
 	}
 
