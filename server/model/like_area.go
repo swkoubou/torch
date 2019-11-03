@@ -42,10 +42,22 @@ func (model *LikeAreaModelImpl) Like(areaID uint) (err error) {
 
 func (model *LikeAreaModelImpl) CountLikes(areaID uint) (count uint, err error) {
 	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
-	result := model.db.Model(&types.LikeArea{}).Where("area_info_id = ?", areaID).Where("created_at > ?", littleBitBefore).Count(&count)
+	result := model.db.Model(&types.LikeArea{}).Where("area_info_id = ?", areaID).Count(&count)
 	err = result.Error
 	if err != nil {
 		errMsg := "LikeAreaModel.CountLikes(): " + err.Error()
+		return 0, errors.New(errMsg)
+	}
+
+	return count, nil
+}
+
+func (model *LikeAreaModelImpl) CountRecentLikes(areaID uint) (count uint, err error) {
+	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
+	result := model.db.Model(&types.LikeArea{}).Where("area_info_id = ?", areaID).Where("created_at > ?", littleBitBefore).Count(&count)
+	err = result.Error
+	if err != nil {
+		errMsg := "LikeAreaModel.CountRecentLikes(): " + err.Error()
 		return 0, errors.New(errMsg)
 	}
 
@@ -58,6 +70,31 @@ func (model *LikeAreaModelImpl) CountAllLikes(targetAreas []types.AreaInfo, targ
 	for _, area := range targetAreas {
 		// エリアのいいね数を取得
 		area.Likes, err = model.CountLikes(area.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		// エリア内のすべてのスポットを取得
+		for _, spot := range targetSpots {
+			if spot.AreaInfoID != area.Model.ID {
+				continue
+			}
+
+			area.Likes += spot.Likes
+		}
+
+		countedAreas = append(countedAreas, area)
+	}
+
+	return countedAreas, nil
+}
+
+func (model *LikeAreaModelImpl) CountRecentAllLikes(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (counted []types.AreaInfo, err error) {
+	var countedAreas []types.AreaInfo
+
+	for _, area := range targetAreas {
+		// エリアのいいね数を取得
+		area.Likes, err = model.CountRecentLikes(area.ID)
 		if err != nil {
 			return nil, err
 		}

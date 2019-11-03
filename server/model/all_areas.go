@@ -50,7 +50,7 @@ func (model *AllAreasModelImpl) Get() (areas []types.AreaInfo, err error) {
 		return nil, errors.New(errMsg)
 	}
 
-	countedAreas, err := model.likeAreaModel.CountAllLikes(areas, spots)
+	countedAreas, err := model.likeAreaModel.CountRecentAllLikes(areas, spots)
 	if err != nil {
 		errMsg := "AllAreasModel.Get(): Can't count area likes.; " + err.Error()
 		return nil, errors.New(errMsg)
@@ -78,5 +78,12 @@ func (model *AllAreasModelImpl) GetWithHotLevel() (areas []types.AreaInfo, err e
 		return nil, err
 	}
 
-	return areasWithHot, nil
+	// いいね数を再取得(今度は全期間)
+	countedAreas, err := model.likeAreaModel.CountAllLikes(areasWithHot, spots)
+	if err != nil {
+		errMsg := "AllAreasModel.Get(): Can't count area likes.; " + err.Error()
+		return nil, errors.New(errMsg)
+	}
+
+	return countedAreas, nil
 }
