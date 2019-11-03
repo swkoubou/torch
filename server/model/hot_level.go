@@ -49,7 +49,7 @@ func (model *HotLevelModelImpl) calcSpotGravity(info types.SpotInfo) float64 {
 	duration := info.GetHourSpan()
 	rawGrav := -0.2173913*duration + 6.2173913
 
-	return model.alignMinMax(rawGrav, 0, 100)
+	return model.alignMinMax(rawGrav, 1, 6)
 }
 
 func (model *HotLevelModelImpl) alignMinMax(target, min, max float64) float64 {
