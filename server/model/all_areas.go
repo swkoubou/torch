@@ -10,13 +10,20 @@ type AllAreasModelImpl struct {
 	db            *gorm.DB
 	hotLevelModel HotLevelModel
 	allSpotsModel AllSpotsModel
+	likeAreaModel LikeAreaModel
 }
 
-func NewAllAreasModel(db *gorm.DB, hotLevelModel HotLevelModel, allSpotsModel AllSpotsModel) AllAreasModel {
+func NewAllAreasModel(
+	db *gorm.DB,
+	hotLevelModel HotLevelModel,
+	allSpotsModel AllSpotsModel,
+	likeAreaModel LikeAreaModel,
+) AllAreasModel {
 	return &AllAreasModelImpl{
 		db:            db,
 		hotLevelModel: hotLevelModel,
 		allSpotsModel: allSpotsModel,
+		likeAreaModel: likeAreaModel,
 	}
 }
 
@@ -35,10 +42,21 @@ func (model *AllAreasModelImpl) Get() (areas []types.AreaInfo, err error) {
 	if len(areas) <= 0 {
 		errMsg := "AllAreasModel.Get(): No rows detected."
 		return nil, errors.New(errMsg)
-
 	}
 
-	return areas, nil
+	spots, err := model.allSpotsModel.Get()
+	if err != nil {
+		errMsg := "AllAreasModel.Get(): Can't load spots; " + err.Error()
+		return nil, errors.New(errMsg)
+	}
+
+	countedAreas, err := model.likeAreaModel.CountAllLikes(areas, spots)
+	if err != nil {
+		errMsg := "AllAreasModel.Get(): Can't count area likes.; " + err.Error()
+		return nil, errors.New(errMsg)
+	}
+
+	return countedAreas, nil
 }
 
 func (model *AllAreasModelImpl) GetWithHotLevel() (areas []types.AreaInfo, err error) {

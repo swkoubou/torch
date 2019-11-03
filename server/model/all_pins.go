@@ -9,9 +9,14 @@ import (
 type AllSpotsModelImpl struct {
 	db            *gorm.DB
 	hotLevelModel HotLevelModel
+	likeSpotModel LikeSpotModel
 }
 
-func NewAllSpotsModel(db *gorm.DB, hotLevelModel HotLevelModel) AllSpotsModel {
+func NewAllSpotsModel(
+	db *gorm.DB,
+	hotLevelModel HotLevelModel,
+	likeSpotModel LikeSpotModel,
+) AllSpotsModel {
 	return &AllSpotsModelImpl{
 		db:            db,
 		hotLevelModel: hotLevelModel,
@@ -33,10 +38,15 @@ func (model *AllSpotsModelImpl) Get() (spots []types.SpotInfo, err error) {
 	if len(spots) <= 0 {
 		errMsg := "AllSpotsModel.Get(): No rows detected."
 		return nil, errors.New(errMsg)
-
 	}
 
-	return spots, nil
+	countedSpots, err := model.likeSpotModel.CountAllLikes(spots)
+	if err != nil {
+		errMsg := "AllAreasModel.Get(): Can't count area likes.; " + err.Error()
+		return nil, errors.New(errMsg)
+	}
+
+	return countedSpots, nil
 }
 
 func (model *AllSpotsModelImpl) GetWithHotLevel() (spots []types.SpotInfo, err error) {
