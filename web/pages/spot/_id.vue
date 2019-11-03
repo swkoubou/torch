@@ -123,7 +123,7 @@
                 }
                 const image = this.info.photoFileName;
                 if (typeof image === "string") {
-                    return '/static-api/images/spot/' + image
+                    return '/static-api/images/spots/' + image
                 }
                 return '';
             },
