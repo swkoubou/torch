@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/swkoubou/torch/server/model/types"
+	"time"
 )
 
 type LikeSpotModelImpl struct {
@@ -36,7 +37,8 @@ func (model *LikeSpotModelImpl) Like(spotID uint) (err error) {
 }
 
 func (model *LikeSpotModelImpl) CountLikes(spotID uint) (count uint, err error) {
-	result := model.db.Model(&types.LikeSpot{}).Where("spot_info_id = ?", spotID).Count(&count)
+	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
+	result := model.db.Model(&types.LikeSpot{}).Where("spot_info_id = ?", spotID).Where("created_at > ?", littleBitBefore).Count(&count)
 	err = result.Error
 	if err != nil {
 		errMsg := "LikeSpotModel.CountLikes(): " + err.Error()

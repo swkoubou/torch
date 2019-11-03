@@ -30,10 +30,7 @@
 
     <div class="map-parent" ref="map-parent" :style="mapParentStyle">
       <img src="/map.png" class="map" ref="map" :style="mapStyle" alt="map" @load="imageLoaded">
-      <div class="user-location-parent" :style="mapStyle">
-        <div class="user-location"
-             :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
-      </div>
+
       <div class="area-range" :style="mapStyle">
         <div class="area-rect" v-for="a in areas" :style="{
         transform: 'translate('+a.leftUp.x + 'px, '+a.leftUp.y + 'px)',
@@ -41,6 +38,11 @@
         height: a.height + 'px',
         opacity: a.opacity ,
         }"></div>
+      </div>
+
+      <div class="user-location-parent" :style="mapStyle">
+        <div class="user-location"
+             :style="{ 'transform': 'translate('+userLocation.x + 'px, '+ userLocation.y + 'px)' }"></div>
 
         <div class="like-effect" v-for="i in likeEffects" :key="i.createdTime"
              :style="{ 'top': i.y + 'px', 'left': i.x + 'px' }"
@@ -523,10 +525,15 @@
                         w = h;
                     }
 
+                    let opacity = v.hotScore / 100.0;
+                    if (opacity < 0.20) {
+                        opacity = 0;
+                    }
+
                     this.$set(this.areas[k], 'leftUp', leftUpPx);
                     this.$set(this.areas[k], 'width', w);
                     this.$set(this.areas[k], 'height', h);
-                    this.$set(this.areas[k], 'opacity', v.hotScore / 100.0);
+                    this.$set(this.areas[k], 'opacity', opacity);
                 });
             },
             getMapPosHandler(x: number, y: number) {
@@ -621,40 +628,9 @@
       display: block;
     }
 
-    .user-location-parent {
-      position: relative;
-      top: -100%;
-
-      .user-location {
-        $size: 15px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: $size;
-        height: $size;
-        background-color: rgb(40, 53, 147);
-        border-radius: 50%;
-        transition: ease .1s transform;
-
-        &::before {
-          display: block;
-          content: '';
-          width: $size * 4;
-          height: $size* 4;
-          border-radius: 50%;
-          background-color: rgba(57, 73, 171, .3);
-          margin: -($size*3/2);
-          border: solid thin rgba(57, 73, 171, .6);
-          border-left-color: transparent;
-          border-right-color: transparent;
-          animation: 1.8s linear opacity-blink-animate infinite;
-        }
-      }
-    }
-
     .area-range {
       position: relative;
-      top: -200%;
+      top: -100%;
 
       .area-rect {
         position: absolute;
@@ -693,6 +669,36 @@
       }
     }
 
+    .user-location-parent {
+      position: relative;
+      top: -200%;
+
+      .user-location {
+        $size: 15px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $size;
+        height: $size;
+        background-color: rgb(40, 53, 147);
+        border-radius: 50%;
+        transition: ease .1s transform;
+
+        &::before {
+          display: block;
+          content: '';
+          width: $size * 4;
+          height: $size* 4;
+          border-radius: 50%;
+          background-color: rgba(57, 73, 171, .3);
+          margin: -($size*3/2);
+          border: solid thin rgba(57, 73, 171, .6);
+          border-left-color: transparent;
+          border-right-color: transparent;
+          animation: 1.8s linear opacity-blink-animate infinite;
+        }
+      }
+    }
 
     .pin-parent {
       position: relative;
@@ -706,7 +712,6 @@
         top: 0;
         left: 0;
         border-radius: 50%;
-        transform: translate(-50%, -100%);
 
         i {
           display: flex;
