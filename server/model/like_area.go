@@ -40,7 +40,7 @@ func (model *LikeAreaModelImpl) Like(areaID uint) (err error) {
 }
 
 func (model *LikeAreaModelImpl) CountLikes(areaID uint) (count uint, err error) {
-	result := model.db.Model(&types.LikeArea{}).Where("area_id = ?", areaID).Count(&count)
+	result := model.db.Model(&types.LikeArea{}).Where("area_info_id = ?", areaID).Count(&count)
 	err = result.Error
 	if err != nil {
 		errMsg := "LikeAreaModel.CountLikes(): " + err.Error()
