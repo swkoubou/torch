@@ -706,6 +706,7 @@
         top: 0;
         left: 0;
         border-radius: 50%;
+        transform: translate(-50%, -100%);
 
         i {
           display: flex;
