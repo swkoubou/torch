@@ -16,7 +16,7 @@ func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, t
 		calculated = append(calculated, area)
 	}
 
-	return targetAreas, nil
+	return calculated, nil
 }
 
 func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error) {
@@ -25,5 +25,5 @@ func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (
 		calculated = append(calculated, spot)
 	}
 
-	return targetSpots, nil
+	return calculated, nil
 }
