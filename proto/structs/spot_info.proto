@@ -15,7 +15,7 @@ message SpotInfo {
     string description = 5; // 説明文
     TimeSpan event_span = 6; // スポットのイベント開催時間
 
-    double hot_score = 10; // ホット度合い(高い方がホット)
+    string hot_score = 10; // ホット度合い(高い方がホット)
 
     uint32 sum_like_count = 20; // いいね数
 }

@@ -1,6 +1,7 @@
 package pb
 
 import (
+	"fmt"
 	"github.com/swkoubou/torch/server/model/types"
 	"github.com/swkoubou/torch/server/view/pb/messages"
 	"github.com/swkoubou/torch/server/view/pb/messages/structs"
@@ -43,7 +44,7 @@ func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 				Longitude: areaInfos.RightBottomY,
 			},
 		},
-		HotScore:          areaInfos.HotLevel,
+		HotScore:          fmt.Sprintf("%f", areaInfos.HotLevel),
 		SpecificLikeCount: uint32(areaInfos.Likes),
 	}
 }
@@ -67,7 +68,7 @@ func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,
-		HotScore:      spotInfo.HotLevel,
+		HotScore:      fmt.Sprintf("%f", spotInfo.HotLevel),
 		Location: &structs.Location{
 			Latitude:  spotInfo.Latitude,
 			Longitude: spotInfo.Longitude,
