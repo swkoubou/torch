@@ -13,8 +13,8 @@
 
     <v-container id="scroll-target" style="max-height: 90vh" class="overflow-y-auto">
       <v-row>
-        <v-card>
-          <v-img height="300" :src="pinImageUrl"></v-img>
+        <v-card width="100%" class="image-filter">
+          <v-img height="300" width="100%" :src="pinImageUrl"></v-img>
         </v-card>
 
         <v-card width="100%" flat>
@@ -123,7 +123,7 @@
                 }
                 const image = this.info.photoFileName;
                 if (typeof image === "string") {
-                    return '/static-api/images/spots/' + image
+                    return '/static-api/images/spots/' + image;
                 }
                 return '';
             },
@@ -192,7 +192,7 @@
                     this.errorMessage = 'ネットワークエラー'
                 })
             },
-            reload(){
+            reload() {
                 location.reload();
             }
         },
@@ -210,5 +210,7 @@
 </script>
 
 <style scoped lang="scss">
-
+  .image-filter {
+    filter: blur(3px);
+  }
 </style>
