@@ -38,10 +38,22 @@ func (model *LikeSpotModelImpl) Like(spotID uint) (err error) {
 
 func (model *LikeSpotModelImpl) CountLikes(spotID uint) (count uint, err error) {
 	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
-	result := model.db.Model(&types.LikeSpot{}).Where("spot_info_id = ?", spotID).Where("created_at > ?", littleBitBefore).Count(&count)
+	result := model.db.Model(&types.LikeSpot{}).Where("spot_info_id = ?", spotID).Count(&count)
 	err = result.Error
 	if err != nil {
 		errMsg := "LikeSpotModel.CountLikes(): " + err.Error()
+		return 0, errors.New(errMsg)
+	}
+
+	return count, nil
+}
+
+func (model *LikeSpotModelImpl) CountRecentLikes(spotID uint) (count uint, err error) {
+	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
+	result := model.db.Model(&types.LikeSpot{}).Where("spot_info_id = ?", spotID).Where("created_at > ?", littleBitBefore).Count(&count)
+	err = result.Error
+	if err != nil {
+		errMsg := "LikeSpotModel.CountRecentLikes(): " + err.Error()
 		return 0, errors.New(errMsg)
 	}
 
@@ -53,6 +65,21 @@ func (model *LikeSpotModelImpl) CountAllLikes(targetSpots []types.SpotInfo) (cou
 
 	for _, v := range targetSpots {
 		v.Likes, err = model.CountLikes(v.Model.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		countedSpots = append(countedSpots, v)
+	}
+
+	return countedSpots, nil
+}
+
+func (model *LikeSpotModelImpl) CountAllRecentLikes(targetSpots []types.SpotInfo) (counted []types.SpotInfo, err error) {
+	var countedSpots []types.SpotInfo
+
+	for _, v := range targetSpots {
+		v.Likes, err = model.CountRecentLikes(v.Model.ID)
 		if err != nil {
 			return nil, err
 		}
