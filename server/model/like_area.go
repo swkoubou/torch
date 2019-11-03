@@ -61,7 +61,6 @@ func (model *LikeAreaModelImpl) CountAllLikes(targetAreas []types.AreaInfo, targ
 		}
 
 		// エリア内のすべてのスポットを取得
-		var locatedSpots []types.SpotInfo
 		for _, spot := range targetSpots {
 			if spot.AreaInfoID != area.Model.ID {
 				continue
