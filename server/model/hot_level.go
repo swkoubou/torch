@@ -65,7 +65,7 @@ func (model *HotLevelModelImpl) alignMinMax(target, min, max float64) float64 {
 
 func (model *HotLevelModelImpl) calcHotLevel(likes, mean, variance, gravity float64) float64 {
 	k := 0.8
-	rawLevel := (likes - (mean - k*variance)) / (2 * k * variance) * 100
+	rawLevel := 10*(likes-mean)/(k*variance) + 50
 	level := gravity * rawLevel
 
 	return model.alignMinMax(level, 0, 100)
