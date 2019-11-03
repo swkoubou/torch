@@ -1,7 +1,6 @@
 package model
 
 import (
-	. "github.com/ahmetb/go-linq"
 	"github.com/swkoubou/torch/server/model/types"
 )
 
@@ -12,35 +11,19 @@ func NewHotLevelModel() HotLevelModel {
 }
 
 func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (calculated []types.AreaInfo, err error) {
-	// TODO : いつか計算する
-	From(targetAreas).
-		Select(func(a interface{}) interface{} {
-			area, isCast := a.(types.AreaInfo)
-			if !isCast {
-				return a // キャストできなくてpanicは避けたいのでそのまま返す
-			}
-
-			area.HotLevel = 1.0
-			return area
-		}).
-		ToSlice(&calculated)
+	for _, area := range targetAreas {
+		area.HotLevel = 1.0
+		calculated = append(calculated, area)
+	}
 
 	return targetAreas, nil
 }
 
 func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error) {
-	// TODO : いつか計算する
-	From(targetSpots).
-		Select(func(a interface{}) interface{} {
-			spot, isCast := a.(types.SpotInfo)
-			if !isCast {
-				return a // キャストできなくてpanicは避けたいのでそのまま返す
-			}
-
-			spot.HotLevel = 1.0
-			return spot
-		}).
-		ToSlice(&calculated)
+	for _, spot := range targetSpots {
+		spot.HotLevel = 1.0
+		calculated = append(calculated, spot)
+	}
 
 	return targetSpots, nil
 }
