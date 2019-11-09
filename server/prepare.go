@@ -8,9 +8,9 @@ import (
 // プリセット的なデータの挿入
 func Prepare(db *gorm.DB) {
 	// エリア情報がカラッポだったらプリセットのデータを挿入
-	var numAllergies uint = 0
-	db.Table("area_infos").Count(&numAllergies)
-	if numAllergies != 0 {
+	var numAreas uint = 0
+	db.Table("area_infos").Count(&numAreas)
+	if numAreas != 0 {
 		return
 	}
 
