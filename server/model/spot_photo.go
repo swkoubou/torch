@@ -52,6 +52,8 @@ func (model *SpotPhotoModelImpl) Add(image *multipart.FileHeader) (fileName stri
 	return dstFileName, nil
 }
 
+// ファイル名と保存先ディレクトリと、それらを組み合わせたファイルへのパスを作る
+// 画像のファイル名が衝突しないようにUUIDでリネームして、nginxが読める場所に保存するまでをやるためのもの
 func (model *SpotPhotoModelImpl) generateFilePathSet(ext string) (fileName, pathDir, filePath string) {
 	uuidStr := uuid.New().String()
 	fileName = fmt.Sprintf("%s%s", uuidStr, ext)
