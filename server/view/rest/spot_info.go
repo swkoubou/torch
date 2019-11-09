@@ -57,6 +57,7 @@ func (view *SpotInfoRESTViewImpl) GetPUTHandler(ctx echo.Context) (err error) {
 		EndingAt:    optionStruct.GetEndTime(),
 	}
 
+	// モデルに投げる
 	err = view.spotModel.Add(newSpotInfo)
 	if err != nil {
 		_ = ctx.String(401, "failure")
@@ -64,6 +65,7 @@ func (view *SpotInfoRESTViewImpl) GetPUTHandler(ctx echo.Context) (err error) {
 		return
 	}
 
+	// レスポンスを返す
 	_ = ctx.String(200, "success")
 	return nil
 }
