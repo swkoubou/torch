@@ -23,15 +23,23 @@ type AllSpotsModel interface {
 
 // エリアへのいいねと、いいね数の取得を行うモデル
 type LikeAreaModel interface {
+	// いいねする
 	Like(areaID uint) (err error)
+	// いいねを数える
 	CountLikes(areaID uint) (count uint, err error)
+	// 指定されたすべてのエリアのいいねを数える
+	// ぐるぐるSQLを避けるために関数を分けてある
 	CountAllLikes(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (counted []types.AreaInfo, err error)
 }
 
 // スポットへのいいねと、いいね数の取得を行うモデル
 type LikeSpotModel interface {
+	// いいねする
 	Like(spotID uint) (err error)
+	// いいねを数える
 	CountLikes(spotID uint) (count uint, err error)
+	// 指定されたすべてのスポットのいいねを数える
+	// ぐるぐるSQLを避けるために関数を分けてある
 	CountAllLikes(targetSpots []types.SpotInfo) (counted []types.SpotInfo, err error)
 }
 
@@ -53,5 +61,7 @@ type SpotModel interface {
 
 // スポットの写真の保存・ファイル名を管理するモデル
 type SpotPhotoModel interface {
-	Add(image *multipart.FileHeader) (fileName string, err error) // ファイル名であってファイルパスではない
+	// スポットの写真をファイル名が衝突しないように保存し、そのファイル名を返す
+	// なお、「ファイル名」であってファイルパスではない
+	Add(image *multipart.FileHeader) (fileName string, err error)
 }
