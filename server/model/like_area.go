@@ -21,6 +21,7 @@ func NewLikeAreaModel(db *gorm.DB, likeSpotModel LikeSpotModel) LikeAreaModel {
 }
 
 func (model *LikeAreaModelImpl) Like(areaID uint) (err error) {
+	// いいねした履歴を保存する
 	adding := &types.LikeArea{
 		AreaInfoID: areaID,
 	}
@@ -41,7 +42,12 @@ func (model *LikeAreaModelImpl) Like(areaID uint) (err error) {
 }
 
 func (model *LikeAreaModelImpl) CountLikes(areaID uint) (count uint, err error) {
+	// TODO : ここでは十把一絡げに30分前からのいいねを取得しているが、全期間のいいね数をとりたいケースもあるので、なんとかする
+
+	// ちょっと前(30分前)
 	littleBitBefore := time.Now().Add(-1 * time.Minute * 30)
+
+	// ちょっと前から現在までを検索対象にいいね数を取得する
 	result := model.db.Model(&types.LikeArea{}).Where("area_info_id = ?", areaID).Where("created_at > ?", littleBitBefore).Count(&count)
 	err = result.Error
 	if err != nil {
