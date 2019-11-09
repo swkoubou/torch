@@ -17,10 +17,10 @@ func Route(e *echo.Echo, db *gorm.DB) error {
 	spotPhotoModel := model.NewSpotPhotoModel()
 	spotModel := model.NewSpotModel(db, spotPhotoModel, likeSpotModel)
 
-	hotLevelModel := model.NewHotLevelModel()
+	hotScoreModel := model.NewHotScoreModel()
 
-	allSpotsModel := model.NewAllSpotsModel(db, hotLevelModel, likeSpotModel)
-	allAreasModel := model.NewAllAreasModel(db, hotLevelModel, allSpotsModel, likeAreaModel)
+	allSpotsModel := model.NewAllSpotsModel(db, hotScoreModel, likeSpotModel)
+	allAreasModel := model.NewAllAreasModel(db, hotScoreModel, allSpotsModel, likeAreaModel)
 
 	spotInfoView := rest.NewSpotInfoRESTView(spotModel)
 	spotInfoPbView := pb.NewSpotInfoPbView(spotModel)

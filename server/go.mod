@@ -17,5 +17,5 @@ require (
 	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271 // indirect
 	golang.org/x/sys v0.0.0-20191029155521-f43be2a4598c // indirect
 	golang.org/x/text v0.3.2 // indirect
-	gonum.org/v1/gonum v0.6.0 // indirect
+	gonum.org/v1/gonum v0.6.0
 )

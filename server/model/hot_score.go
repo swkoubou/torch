@@ -5,13 +5,13 @@ import (
 	"gonum.org/v1/gonum/stat"
 )
 
-type HotLevelModelImpl struct{}
+type HotScoreModelImpl struct{}
 
-func NewHotLevelModel() HotLevelModel {
-	return &HotLevelModelImpl{}
+func NewHotScoreModel() HotScoreModel {
+	return &HotScoreModelImpl{}
 }
 
-func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (calculated []types.AreaInfo, err error) {
+func (model *HotScoreModelImpl) CalcAreaHotScore(targetAreas []types.AreaInfo, targetSpots []types.SpotInfo) (calculated []types.AreaInfo, err error) {
 	// いいねだけを取り出した配列(平均と分散の計算に使う)
 	var likesArray []float64
 	for _, area := range targetAreas {
@@ -23,14 +23,14 @@ func (model *HotLevelModelImpl) CalcAreaHotLevel(targetAreas []types.AreaInfo, t
 
 	// 各エリアの盛り上がり度合いを計算し、詰め直して返す
 	for _, area := range targetAreas {
-		area.HotLevel = model.calcHotLevel(float64(area.Likes), mean, variance, 3)
+		area.HotScore = model.calcHotScore(float64(area.Likes), mean, variance, 3)
 		calculated = append(calculated, area)
 	}
 
 	return calculated, nil
 }
 
-func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error) {
+func (model *HotScoreModelImpl) CalcSpotHotScore(targetSpots []types.SpotInfo) (calculated []types.SpotInfo, err error) {
 	// いいねだけを取り出した配列(平均と分散の計算に使う)
 	var likesArray []float64
 	for _, spot := range targetSpots {
@@ -44,7 +44,7 @@ func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (
 	for _, spot := range targetSpots {
 		gravity := model.calcSpotGravity(spot)
 
-		spot.HotLevel = model.calcHotLevel(float64(spot.Likes), mean, variance, gravity)
+		spot.HotScore = model.calcHotScore(float64(spot.Likes), mean, variance, gravity)
 		calculated = append(calculated, spot)
 	}
 
@@ -52,7 +52,7 @@ func (model *HotLevelModelImpl) CalcSpotHotLevel(targetSpots []types.SpotInfo) (
 }
 
 // スポットの盛り上がり度合いを、イベントの開催期間の短さで重みをつける
-func (model *HotLevelModelImpl) calcSpotGravity(info types.SpotInfo) float64 {
+func (model *HotScoreModelImpl) calcSpotGravity(info types.SpotInfo) float64 {
 	duration := info.GetHourSpan()
 	rawGrav := -0.2173913*duration + 6.2173913
 
@@ -60,7 +60,7 @@ func (model *HotLevelModelImpl) calcSpotGravity(info types.SpotInfo) float64 {
 }
 
 // データを最大値・最小値を指定して丸める
-func (model *HotLevelModelImpl) alignMinMax(target, min, max float64) float64 {
+func (model *HotScoreModelImpl) alignMinMax(target, min, max float64) float64 {
 	if min > target {
 		return min
 	}
@@ -72,12 +72,12 @@ func (model *HotLevelModelImpl) alignMinMax(target, min, max float64) float64 {
 }
 
 // 盛り上がり度合いを算出する
-func (model *HotLevelModelImpl) calcHotLevel(likes, mean, variance, gravity float64) float64 {
+func (model *HotScoreModelImpl) calcHotScore(likes, mean, variance, gravity float64) float64 {
 	// とりあえず、いいね数の偏差値の中央値を10とし、振れ幅を50倍にした値
 	// TODO : 偏差値だけだと盛り上がりがいい感じに計測できないので、なんとかする
 	k := 1.0
-	rawLevel := 500*(likes-mean)/(k*variance) + 10
-	level := gravity * rawLevel
+	rawScore := 500*(likes-mean)/(k*variance) + 10
+	scoreWithGrav := gravity * rawScore
 
-	return model.alignMinMax(level, 0, 100)
+	return model.alignMinMax(scoreWithGrav, 0, 100)
 }

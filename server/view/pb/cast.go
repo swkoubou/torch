@@ -60,7 +60,7 @@ func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 				Longitude: areaInfos.RightBottomY,
 			},
 		},
-		HotScore:          areaInfos.HotLevel,
+		HotScore:          areaInfos.HotScore,
 		SpecificLikeCount: uint32(areaInfos.Likes),
 	}
 }
@@ -72,7 +72,7 @@ func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,
-		HotScore:      spotInfo.HotLevel,
+		HotScore:      spotInfo.HotScore,
 		Location: &structs.Location{
 			Latitude:  spotInfo.Latitude,
 			Longitude: spotInfo.Longitude,

@@ -15,7 +15,7 @@ type AreaInfo struct {
 	RightBottomX float64
 	RightBottomY float64
 
-	HotLevel float64 `gorm:"-"`
+	HotScore float64 `gorm:"-"`
 }
 
 func (area *AreaInfo) GetRegion() Rectangle {
