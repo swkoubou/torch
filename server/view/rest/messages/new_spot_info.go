@@ -5,15 +5,19 @@ import (
 	"time"
 )
 
+// `/spotInfo/create` のリクエストに乗っているJSONを表す型
 type NewSpotInfoRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
+	// 構造体に入れるとネスト掘られたJSONをなんとかしなきゃいけないんですけど、
+	// やったことなかったんで各メンバをバラバラに定義して解決した座標
 	LocLatitude  float64 `json:"loc_latitude"`
 	LocLongitude float64 `json:"loc_longitude"`
 
 	AreaID uint `json:"area_id"`
 
+	// 座標に同じ
 	StartYear   int `json:"start_year"`
 	StartMonth  int `json:"start_month"`
 	StartDay    int `json:"start_day"`
@@ -21,6 +25,7 @@ type NewSpotInfoRequest struct {
 	StartMinute int `json:"start_minute"`
 	StartSecond int `json:"start_second"`
 
+	// 座標に同じ
 	EndYear   int `json:"end_year"`
 	EndMonth  int `json:"end_month"`
 	EndDay    int `json:"end_day"`
@@ -29,6 +34,7 @@ type NewSpotInfoRequest struct {
 	EndSecond int `json:"end_second"`
 }
 
+// NewSpotInfoRequestにバラバラに定義されているイベント開始日時を `time.Time` に変換する
 func (req *NewSpotInfoRequest) GetLocation() *types.Location {
 	return &types.Location{
 		Latitude:  req.LocLatitude,
@@ -36,6 +42,7 @@ func (req *NewSpotInfoRequest) GetLocation() *types.Location {
 	}
 }
 
+// NewSpotInfoRequestにバラバラに定義されているイベント開始日時を `time.Time` に変換する
 func (req *NewSpotInfoRequest) GetStartTime() time.Time {
 	return time.Date(
 		req.StartYear,
@@ -49,6 +56,7 @@ func (req *NewSpotInfoRequest) GetStartTime() time.Time {
 	)
 }
 
+// NewSpotInfoRequestにバラバラに定義されているイベント終了日時を `time.Time` に変換する
 func (req *NewSpotInfoRequest) GetEndTime() time.Time {
 	return time.Date(
 		req.EndYear,

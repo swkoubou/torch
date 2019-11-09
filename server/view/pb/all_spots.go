@@ -17,7 +17,7 @@ func NewAllSpotsPbView(allSpotsModel model.AllSpotsModel) view.AllSpotsPbView {
 
 func (view *AllSpotsPbViewImpl) GetGETHandler(ctx echo.Context) (message proto.Message, err error) {
 	// モデルに投げる
-	founds, err := view.allSpotsModel.GetWithHotLevel()
+	founds, err := view.allSpotsModel.GetWithHotScore()
 	if err != nil {
 		return nil, err
 	}

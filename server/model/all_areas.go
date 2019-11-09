@@ -8,20 +8,20 @@ import (
 
 type AllAreasModelImpl struct {
 	db            *gorm.DB
-	hotLevelModel HotLevelModel
+	hotScoreModel HotScoreModel
 	allSpotsModel AllSpotsModel
 	likeAreaModel LikeAreaModel
 }
 
 func NewAllAreasModel(
 	db *gorm.DB,
-	hotLevelModel HotLevelModel,
+	hotScoreModel HotScoreModel,
 	allSpotsModel AllSpotsModel,
 	likeAreaModel LikeAreaModel,
 ) AllAreasModel {
 	return &AllAreasModelImpl{
 		db:            db,
-		hotLevelModel: hotLevelModel,
+		hotScoreModel: hotScoreModel,
 		allSpotsModel: allSpotsModel,
 		likeAreaModel: likeAreaModel,
 	}
@@ -59,7 +59,7 @@ func (model *AllAreasModelImpl) Get() (areas []types.AreaInfo, err error) {
 	return countedAreas, nil
 }
 
-func (model *AllAreasModelImpl) GetWithHotLevel() (areas []types.AreaInfo, err error) {
+func (model *AllAreasModelImpl) GetWithHotScore() (areas []types.AreaInfo, err error) {
 	// 上の関数では盛り上がり具合をロードしないので、
 	// この関数では盛り上がり具合も計算するようにする
 
@@ -73,7 +73,7 @@ func (model *AllAreasModelImpl) GetWithHotLevel() (areas []types.AreaInfo, err e
 	spots, err := model.allSpotsModel.Get()
 
 	// 盛り上がり具合をロードする
-	areasWithHot, err := model.hotLevelModel.CalcAreaHotLevel(areas, spots)
+	areasWithHot, err := model.hotScoreModel.CalcAreaHotScore(areas, spots)
 	if err != nil {
 		return nil, err
 	}

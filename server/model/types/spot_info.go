@@ -24,7 +24,7 @@ type SpotInfo struct {
 	StartingAt time.Time
 	EndingAt   time.Time
 
-	HotLevel float64 `gorm:"-"`
+	HotScore float64 `gorm:"-"`
 }
 
 func (spot *SpotInfo) GetLocation() Location {

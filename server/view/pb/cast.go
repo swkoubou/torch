@@ -6,8 +6,9 @@ import (
 	"github.com/swkoubou/torch/server/view/pb/messages/structs"
 )
 
-// `cast.go` は、キャストに使うためだけの関数を置いておくための場所です
+// `cast.go` は、View層でキャストに使うためだけの関数を置いておくための場所です
 
+// 内部のデータモデルである SpotInfo を、Protocol Buffersで定義した SpotInfoResponse に変換する
 func ToSpotInfoResponse(spotInfo *types.SpotInfo) *messages.SpotInfoResponse {
 	pbSpotInfo := ToPbSpotInfo(spotInfo)
 
@@ -16,6 +17,7 @@ func ToSpotInfoResponse(spotInfo *types.SpotInfo) *messages.SpotInfoResponse {
 	}
 }
 
+// 内部のデータモデルである AreaInfo の配列を、Protocol Buffersで定義した AllAreaInfoResponse に変換する
 func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResponse {
 	var pbAreaInfos []*structs.AreaInfo
 
@@ -29,6 +31,21 @@ func ToAllAreaInfoResponse(areaInfos []types.AreaInfo) *messages.AllAreaInfoResp
 	}
 }
 
+// 内部のデータモデルである SpotInfo の配列を、Protocol Buffersで定義した AllSpotsResponse に変換する
+func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsResponse {
+	var pbSpotInfos []*structs.SpotInfo
+
+	for _, v := range areaInfos {
+		pbSpotInfo := ToPbSpotInfo(&v)
+		pbSpotInfos = append(pbSpotInfos, pbSpotInfo)
+	}
+
+	return &messages.AllSpotsResponse{
+		SpotInfos: pbSpotInfos,
+	}
+}
+
+// 内部のデータモデルである AreaInfo を、Protocol Buffersで定義した AreaInfo に変換する
 func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 	return &structs.AreaInfo{
 		AreaId: uint32(areaInfos.Model.ID),
@@ -43,31 +60,19 @@ func ToPbAreaInfo(areaInfos *types.AreaInfo) *structs.AreaInfo {
 				Longitude: areaInfos.RightBottomY,
 			},
 		},
-		HotScore:          areaInfos.HotLevel,
+		HotScore:          areaInfos.HotScore,
 		SpecificLikeCount: uint32(areaInfos.Likes),
 	}
 }
 
-func ToAllSpotInfoResponse(areaInfos []types.SpotInfo) *messages.AllSpotsResponse {
-	var pbSpotInfos []*structs.SpotInfo
-
-	for _, v := range areaInfos {
-		pbSpotInfo := ToPbSpotInfo(&v)
-		pbSpotInfos = append(pbSpotInfos, pbSpotInfo)
-	}
-
-	return &messages.AllSpotsResponse{
-		SpotInfos: pbSpotInfos,
-	}
-}
-
+// 内部のデータモデルである SpotInfo を、Protocol Buffersで定義した SpotInfo に変換する
 func ToPbSpotInfo(spotInfo *types.SpotInfo) *structs.SpotInfo {
 	return &structs.SpotInfo{
 		SpotId:        uint32(spotInfo.ID),
 		Name:          spotInfo.Name,
 		Description:   spotInfo.Description,
 		PhotoFileName: spotInfo.PhotoFileName,
-		HotScore:      spotInfo.HotLevel,
+		HotScore:      spotInfo.HotScore,
 		Location: &structs.Location{
 			Latitude:  spotInfo.Latitude,
 			Longitude: spotInfo.Longitude,
